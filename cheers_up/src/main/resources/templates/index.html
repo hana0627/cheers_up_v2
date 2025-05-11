@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<!--<head th:replace="fragments/header :: header">-->
+    <meta charset="UTF-8">
+    <title>Cheers Up</title>
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 60vw;
+            max-width: 960px;
+            margin: 0 auto;
+            background-color: #f2f2f2;
+        }
+        .left-div {
+            flex: 1;
+            padding: 20px;
+            background-color: #f9f9f9;
+            text-align: center;
+            width: 60%;
+        }
+        .right-div {
+            flex: 1;
+            padding: 20px;
+            background-color: #f2f2f2;
+            text-align: center;
+            width: 40%;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="left-div">
+        <img src="/images/beer-advertising.jpg" alt="Image" style="height: 150px; width: 100px">
+    </div>
+
+    <div sec:authorize="isAuthenticated()">
+        <a th:href="@{/users/login}" role="button" id="kakao-logout" class="me-2">
+            <!--      <span th:text="${principal.nickname}"></span>님 안녕하세요-->
+            입장하기
+        </a>
+    </div>
+    <div sec:authorize="!isAuthenticated()">
+        <a th:href="@{/oauth2/authorization/kakao}" role="button" id="kakao-login" class="me-2">
+            <img alt="Kakao Login" src="/images/kakao_login_medium.png">
+        </a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Header</title>
+</head>
+<body>
+<header>
+  <div sec:authorize="isAuthenticated()">
+    <a th:href="@{/logout}" role="button" id="kakao-logout" class="me-2">
+<!--      <span th:text="${principal.nickname}"></span>님 안녕하세요-->
+      로그아웃
+    </a>
+  </div>
+  <div sec:authorize="!isAuthenticated()">
+    <a th:href="@{/oauth2/authorization/kakao}" role="button" id="kakao-login" class="me-2">
+      <img alt="Kakao Login" src="/images/kakao_login_medium.png">
+    </a>
+  </div>
+
+</header>
+</body>
+</html>
