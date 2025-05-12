@@ -31,12 +31,12 @@
             width: 600px;
             placeholder-color: #999;
 
-        ::placeholder {
-            color: #999;
-            font-style: italic;
-        }
+            ::placeholder {
+                color: #999;
+                font-style: italic;
+            }
 
-        padding-right: 40px; /* 아이콘의 크기만큼 오른쪽 padding 추가 */
+            padding-right: 40px; /* 아이콘의 크기만큼 오른쪽 padding 추가 */
         }
         .highlight1 {
             color: #EA4335;
@@ -83,22 +83,22 @@
 <body>
 <h1><span class="highlight1">오늘</span> <span class="highlight2">한잔</span> <span class="highlight3">어때요</span><span
         class="highlight4">?</span></h1>
-<form action="/search" method="post">
+<form action="/search" method="get">
     <input type="text" id="address_kakao" name="address" placeholder="어디서 한잔 할까요?" readonly="true">
-        <button type="submit" id="search_btn">Search</button>
+    <button type="submit" id="search_btn">Search</button>
     </div>
 </form>
 </body>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script>
-  window.onload = function() {
-    document.getElementById("address_kakao").addEventListener("click", function(){
-      new daum.Postcode({
-        oncomplete: function(data) {
-          document.getElementById("address_kakao").value = data.address;
-        }
-      }).open();
-    });
-  }
+    window.onload = function() {
+        document.getElementById("address_kakao").addEventListener("click", function(){
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    document.getElementById("address_kakao").value = data.address;
+                }
+            }).open();
+        });
+    }
 </script>
 </html>
