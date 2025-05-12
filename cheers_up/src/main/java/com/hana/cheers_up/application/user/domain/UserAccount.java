@@ -2,13 +2,16 @@ package com.hana.cheers_up.application.user.domain;
 
 import com.hana.cheers_up.application.user.domain.constant.RoleType;
 import com.hana.cheers_up.application.user.domain.constant.RoleTypeConvertor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@EqualsAndHashCode(callSuper = false)
 public class UserAccount extends AuditingFields {
 
     @Id

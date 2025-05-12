@@ -3,8 +3,6 @@ package com.hana.cheers_up.application.user.dto;
 import com.hana.cheers_up.application.user.domain.UserAccount;
 import com.hana.cheers_up.application.user.domain.constant.RoleType;
 import lombok.Builder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
@@ -55,6 +53,7 @@ public record UserAccountDto(
                 createdBy
         );
     }
+
 //    @Component
 //    public class UserRequestMapper {
 //        public UserAccountDto toDto(OAuth2User oAuth2User) {
