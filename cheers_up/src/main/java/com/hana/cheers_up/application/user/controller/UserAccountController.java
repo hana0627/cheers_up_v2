@@ -1,27 +1,15 @@
 package com.hana.cheers_up.application.user.controller;
 
-import com.hana.cheers_up.application.user.dto.UserAccountDto;
-import com.hana.cheers_up.application.user.service.UserAccountService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Controller
 public class UserAccountController {
 
-    private final UserAccountService userAccountService;
-
-    @PostMapping("/users/add")
-    public String addUser(UserAccountDto dto) {
-        log.info("[UserAccountController addUser] ");
-        userAccountService.saveUser(dto);
-        return "/cheers/search";
-    }
+//    private final UserAccountService userAccountService;
 
     @RequestMapping("/users/login")
     public String login() {
@@ -30,3 +18,12 @@ public class UserAccountController {
     }
 
 }
+
+// unused API
+//    @PostMapping("/users/add")
+//    public String addUser(@RequestBody UserAccountDto dto) {
+//        log.info("[UserAccountController addUser] ");
+//        System.out.println("여기온다!!!!!!!!!");
+//        userAccountService.saveUser(dto);
+//        return "/cheers/search";
+//    }
