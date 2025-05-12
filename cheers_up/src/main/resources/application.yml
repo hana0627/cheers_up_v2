@@ -1,37 +1,41 @@
 spring:
   profiles:
-    active: local # default
+    active: local
     group:
       local:
-        -common
+        - common
       prod:
-        -prod
+        - prod
+
 ---
+
 spring:
   config:
     activate:
       on-profile: common
-
 
 kakao:
   rest:
     api:
       key: ${KAKAO_OAUTH_CLIENT_ID}
 
-
 ---
+
 spring:
   config:
     activate:
       on-profile: local
+
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3307/cheers-up
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${MARIADB_URL}
+    username: ${MARIADB_USERNAME}
+    password: ${MARIADB_PASSWORD}
+
   redis:
     host: localhost
     port: 6379
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -47,7 +51,6 @@ spring:
             client-secret: ${KAKAO_OAUTH_CLIENT_SECRET}
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/kakao?redirect_uri=/users/login"
-            #            redirect-uri: "{baseUrl}/users/login"
             client-authentication-method: POST
         provider:
           kakao:
@@ -57,6 +60,7 @@ spring:
             user-name-attribute: id
 
 ---
+
 spring:
   config:
     activate:
