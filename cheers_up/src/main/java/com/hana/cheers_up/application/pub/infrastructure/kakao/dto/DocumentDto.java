@@ -1,4 +1,4 @@
-package com.hana.cheers_up.application.api.dto;
+package com.hana.cheers_up.application.pub.infrastructure.kakao.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

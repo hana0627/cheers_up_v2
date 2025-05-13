@@ -1,6 +1,6 @@
 package com.hana.cheers_up.application.pub.dto.response;
 
-import com.hana.cheers_up.application.pub.domain.Direction;
+import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.LocationSearchResult;
 import lombok.Builder;
 
 
@@ -15,14 +15,14 @@ public record PubResponse(
         String distance
 ) {
 
-    public static PubResponse from(Direction direction, String directionUrl, String roadViewUrl) {
+    public static PubResponse from(LocationSearchResult locationSearchResult, String directionUrl, String roadViewUrl) {
         return PubResponse.builder()
-                .pubName(direction.getTargetPubName())
-                .pubAddress(direction.getTargetAddress())
+                .pubName(locationSearchResult.getTargetPubName())
+                .pubAddress(locationSearchResult.getTargetAddress())
                 .directionUrl(directionUrl)
                 .roadViewUrl(roadViewUrl)
-                .categoryName(direction.getTargetCategoryName())
-                .distance(String.format("%.1f m", direction.getDistance()))
+                .categoryName(locationSearchResult.getTargetCategoryName())
+                .distance(String.format("%.1f m", locationSearchResult.getDistance()))
                 .build();
     }
 

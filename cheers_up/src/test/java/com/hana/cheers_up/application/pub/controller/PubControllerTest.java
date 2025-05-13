@@ -1,10 +1,10 @@
-package com.hana.cheers_up.application.api.controller;
+package com.hana.cheers_up.application.pub.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hana.cheers_up.application.pub.controller.PubController;
 import com.hana.cheers_up.application.pub.dto.response.PubResponse;
-import com.hana.cheers_up.application.pub.service.DirectionService;
+import com.hana.cheers_up.application.pub.service.PubService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,13 +13,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ApiController.class)
-class ApiControllerTest {
+@WebMvcTest(PubController.class)
+class PubControllerTest {
 
     @Autowired
     private MockMvc mvc;
@@ -28,7 +27,7 @@ class ApiControllerTest {
     private ObjectMapper om;
 
     @MockBean
-    private DirectionService directionService;
+    private PubService pubService;
 
     @Test
     @WithMockUser(username = "user", roles = "USER")  // 인증된 사용자로 설정
@@ -57,7 +56,7 @@ class ApiControllerTest {
                         "105.0 m")
         );
 
-        given(directionService.recommendPubs(address)).willReturn(pubs);
+        given(pubService.recommendPubs(address)).willReturn(pubs);
 
         // when & then
         mvc.perform(get("/search").param("address", address))

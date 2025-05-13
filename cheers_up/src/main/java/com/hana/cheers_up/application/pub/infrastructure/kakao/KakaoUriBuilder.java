@@ -1,14 +1,15 @@
-package com.hana.cheers_up.application.api.service;
+package com.hana.cheers_up.application.pub.infrastructure.kakao;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
 @Slf4j
-@Service
-public class KakaoUriBuilderService {
+@Component
+public class KakaoUriBuilder {
 
     private static final String KAKAO_LOCAL_SEARCH_ADDRESS_URL = "https://dapi.kakao.com/v2/local/search/address.json";
     private static final String KAKAO_CATEGORY_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/category.json";
