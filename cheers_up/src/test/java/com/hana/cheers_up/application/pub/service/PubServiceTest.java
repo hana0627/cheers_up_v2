@@ -144,6 +144,19 @@ class PubServiceTest {
     }
 
     @Test
+    void 빈_주소값으로_주소검색시_emptyList를_반환한다() {
+        //given
+        String address = null;
+
+        //when
+        List<PubResponse> result = pubService.recommendPubs(address);
+
+        //then
+        then(kakaoSearch).shouldHaveNoInteractions();
+        assertThat(result).isEmpty();
+    }
+
+    @Test
     void 주소검색시_최대_3번의_카테고리검색과_함께_성공한다_결과가_작은경우() {
         //given
         String address = "서울 동작구 상도로 357";

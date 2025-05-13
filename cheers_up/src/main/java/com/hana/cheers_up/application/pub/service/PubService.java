@@ -30,6 +30,7 @@ public class PubService {
     @Transactional
     public List<PubResponse> recommendPubs(String address) {
         log.info("[DirectionService recommendPubs]");
+        if (ObjectUtils.isEmpty(address)) return Collections.emptyList();
 
         // step1. 주소를 통한  좌표계산
         // [
@@ -54,7 +55,7 @@ public class PubService {
                     // 길찾기 주소정보
                     String directionUrl = createDirectionUrl(locationSearchResult);
                     // 로드뷰 주소정보
-                    String roadViewUrl = ROAD_VIEW_BASE_URL + locationSearchResult.getTargetLatitude() + "," + locationSearchResult.getTargetLongitude();
+                    String roadViewUrl = ROAD_VIEW_BASE_URL + locationSearchResult.targetLatitude() + "," + locationSearchResult.targetLongitude();
                     return PubResponse.from(locationSearchResult, directionUrl, roadViewUrl);
                 })
                 .filter(pubResponse -> pubResponse.categoryName().contains(PUB_CATEGORY)).toList();
@@ -88,8 +89,8 @@ public class PubService {
     }
 
     protected static String createDirectionUrl(LocationSearchResult locationSearchResult) {
-        String params = String.join(",", locationSearchResult.getTargetPubName(),
-                String.valueOf(locationSearchResult.getTargetLatitude()), String.valueOf(locationSearchResult.getTargetLongitude()));
+        String params = String.join(",", locationSearchResult.targetPubName(),
+                String.valueOf(locationSearchResult.targetLatitude()), String.valueOf(locationSearchResult.targetLongitude()));
 
         String directionUrl = UriComponentsBuilder.fromHttpUrl(DIRECTION_BASE_URL + params).toUriString();
         return directionUrl;

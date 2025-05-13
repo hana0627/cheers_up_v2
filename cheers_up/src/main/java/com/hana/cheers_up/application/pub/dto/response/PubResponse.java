@@ -17,12 +17,12 @@ public record PubResponse(
 
     public static PubResponse from(LocationSearchResult locationSearchResult, String directionUrl, String roadViewUrl) {
         return PubResponse.builder()
-                .pubName(locationSearchResult.getTargetPubName())
-                .pubAddress(locationSearchResult.getTargetAddress())
+                .pubName(locationSearchResult.targetPubName())
+                .pubAddress(locationSearchResult.targetAddress())
                 .directionUrl(directionUrl)
                 .roadViewUrl(roadViewUrl)
-                .categoryName(locationSearchResult.getTargetCategoryName())
-                .distance(String.format("%.1f m", locationSearchResult.getDistance()))
+                .categoryName(locationSearchResult.targetCategoryName())
+                .distance(String.format("%.1f m", locationSearchResult.distance()))
                 .build();
     }
 
