@@ -1,9 +1,10 @@
-package com.hana.cheers_up.application.user.service;
+package com.hana.cheers_up.unit.application.user.service;
 
 import com.hana.cheers_up.application.user.domain.UserAccount;
 import com.hana.cheers_up.application.user.domain.constant.RoleType;
 import com.hana.cheers_up.application.user.dto.UserAccountDto;
 import com.hana.cheers_up.application.user.repository.UserAccountRepository;
+import com.hana.cheers_up.application.user.service.UserAccountService;
 import com.hana.cheers_up.global.security.KakaoOAuth2Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,5 +1,6 @@
-package com.hana.cheers_up.application.pub.infrastructure.kakao;
+package com.hana.cheers_up.unit.application.pub.infrastructure.kakao;
 
+import com.hana.cheers_up.application.pub.infrastructure.kakao.KakaoUriBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,4 +1,4 @@
-package com.hana.cheers_up.application.pub.service;
+package com.hana.cheers_up.unit.application.pub.service;
 
 import com.hana.cheers_up.application.pub.dto.response.PubResponse;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.KakaoSearch;
@@ -6,6 +6,7 @@ import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.DocumentDto;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.KakaoResponse;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.LocationSearchResult;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.MetaDto;
+import com.hana.cheers_up.application.pub.service.PubService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -62,11 +63,6 @@ class PubServiceTest {
         given(kakaoSearch.getRestaurantsByLocation(latitude,longitude,radius,3)).willReturn(restaurantResponse3);
         // 좌표 -> 음식점
 
-
-        // 좌표 -> 음식점
-        // kakaoSearch.getRestaurantsByLocation(inputDto.latitude(), inputDto.longitude(), RADIUS_KM, page);
-
-
         //when
         List<PubResponse> result = pubService.recommendPubs(address);
 
@@ -120,11 +116,6 @@ class PubServiceTest {
         given(kakaoSearch.getRestaurantsByLocation(latitude,longitude,radius,3)).willReturn(restaurantResponse3);
         // 좌표 -> 음식점
 
-
-        // 좌표 -> 음식점
-        // kakaoSearch.getRestaurantsByLocation(inputDto.latitude(), inputDto.longitude(), RADIUS_KM, page);
-
-
         //when
         List<PubResponse> result = pubService.recommendPubs(address);
 
@@ -141,6 +132,32 @@ class PubServiceTest {
         assertThat(result.get(0).categoryName()).contains("술집");
         assertThat(result.get(1).categoryName()).contains("술집");
         assertThat(result.get(2).categoryName()).contains("술집");
+    }
+
+
+    @Test
+    void 주소검색결과의_document가_null일경우_emptyList를_반환한다() {
+        //given
+        String address = "서울 동작구 상도로 357";
+        double latitude = 37.4969397553084;
+        double longitude = 126.953540835787;
+        double radius = 3.0;
+
+        // 주소 -> 좌표
+        MetaDto coordiateMetaDto = new MetaDto(1, 1L, true);
+//        List<DocumentDto> coordinateDocumentDtoList = List.of();
+        KakaoResponse coordinate = new KakaoResponse(coordiateMetaDto, null);
+
+        given(kakaoSearch.getCoordinatesByAddress(address)).willReturn(coordinate);
+        // 주소 -> 좌표
+
+        //when
+        List<PubResponse> result = pubService.recommendPubs(address);
+
+        //then
+        then(kakaoSearch).should().getCoordinatesByAddress(address);
+
+        assertThat(result).size().isEqualTo(0);
     }
 
     @Test
@@ -207,26 +224,6 @@ class PubServiceTest {
 
 
     @Test
-    void documentDtos가_빈경우_emptyList를_반환한다() {
-        //given
-        String address = "서울 동작구 상도로 357";
-        KakaoResponse coordinate = new KakaoResponse(
-                new MetaDto(0, 0L, true),
-                List.of() // 빈 리스트
-        );
-
-        given(kakaoSearch.getCoordinatesByAddress(address)).willReturn(coordinate);
-
-        //when
-        List<PubResponse> result = pubService.recommendPubs(address);
-
-        //then
-        then(kakaoSearch).should().getCoordinatesByAddress(address);
-        then(kakaoSearch).shouldHaveNoMoreInteractions();
-        assertThat(result).isEmpty();
-    }
-
-    @Test
     void kakaoResponse가_null인경우_emptyList를_반환한다() {
         //given
         String address = "서울 동작구 상도로 357";
@@ -242,19 +239,6 @@ class PubServiceTest {
         assertThat(result).isEmpty();
     }
 
-
-
-    @Test
-    void getRestaurants메서드의_입력값이_null이면_emptyList를_반환한다() {
-        //given
-        // nothing
-
-        //when
-        List<LocationSearchResult> result = pubService.getRestaurants(null);
-
-        //then
-        assertThat(result).isEmpty();
-    }
 
 
     private static List<DocumentDto> getRestaurantsDocumentList3() {

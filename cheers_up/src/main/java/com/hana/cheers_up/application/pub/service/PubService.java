@@ -63,8 +63,7 @@ public class PubService {
 
 
 
-    protected List<LocationSearchResult> getRestaurants(DocumentDto inputDto) {
-        if (Objects.isNull(inputDto)) return Collections.emptyList();
+    private List<LocationSearchResult> getRestaurants(DocumentDto inputDto) {
         List<LocationSearchResult> locationSearchResults = new ArrayList<>();
         int page = 0;
 
@@ -81,14 +80,14 @@ public class PubService {
         return locationSearchResults;
     }
 
-    protected static void addDirections(DocumentDto inputDto, List<LocationSearchResult> locationSearchResults, KakaoResponse kakaoResponse) {
+    private static void addDirections(DocumentDto inputDto, List<LocationSearchResult> locationSearchResults, KakaoResponse kakaoResponse) {
         locationSearchResults.addAll(kakaoResponse
                 .documentDtos().stream()
                 .map(pubDto -> LocationSearchResult.from(inputDto, pubDto))
                 .toList());
     }
 
-    protected static String createDirectionUrl(LocationSearchResult locationSearchResult) {
+    private static String createDirectionUrl(LocationSearchResult locationSearchResult) {
         String params = String.join(",", locationSearchResult.targetPubName(),
                 String.valueOf(locationSearchResult.targetLatitude()), String.valueOf(locationSearchResult.targetLongitude()));
 

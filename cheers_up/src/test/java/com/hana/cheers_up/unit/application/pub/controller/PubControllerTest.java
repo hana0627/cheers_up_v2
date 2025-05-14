@@ -1,4 +1,4 @@
-package com.hana.cheers_up.application.pub.controller;
+package com.hana.cheers_up.unit.application.pub.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hana.cheers_up.application.pub.controller.PubController;

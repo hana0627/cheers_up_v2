@@ -22,7 +22,7 @@ public class KakaoSearch {
     private static final String PUB_CATEGORY = "FD6";
 
     @Value("${kakao.rest.api.key}")
-    protected String kakaoRestApiKey;
+    private String kakaoRestApiKey;
 
 
     /**

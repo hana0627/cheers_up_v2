@@ -1,6 +1,8 @@
-package com.hana.cheers_up.application.pub.infrastructure.kakao;
+package com.hana.cheers_up.unit.application.pub.infrastructure.kakao;
 
 
+import com.hana.cheers_up.application.pub.infrastructure.kakao.KakaoSearch;
+import com.hana.cheers_up.application.pub.infrastructure.kakao.KakaoUriBuilder;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.DocumentDto;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.KakaoResponse;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.MetaDto;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
@@ -22,11 +25,15 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
-@TestPropertySource(properties = "kakao.rest.api.key=kakaoRestApiKey")
+//@TestPropertySource(properties = "kakao.rest.api.key=kakaoRestApiKey")
 class KakaoSearchTest {
 
     @InjectMocks
     private KakaoSearch kakaoSearch;
+
+    @Value("${kakao.rest.api.key}")
+    private String kakaoRestApiKey;
+
 
     @Mock
     private RestTemplate restTemplate;
@@ -46,7 +53,7 @@ class KakaoSearchTest {
         String address = "서울 동작구 상도로 357";
         double latitude = 37.4969397553084;
         double longitude = 126.953540835787;
-        kakaoSearch.kakaoRestApiKey = "kakaoRestApiKey";
+//        kakaoSearch.kakaoRestApiKey = "kakaoRestApiKey";
 
         URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL)
                 .queryParam("query", address)
@@ -55,7 +62,7 @@ class KakaoSearchTest {
                 .toUri();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoSearch.kakaoRestApiKey);
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
         HttpEntity httpEntity = new HttpEntity<>(headers);
 
         MetaDto coordiateMetaDto = new MetaDto(1, 1L, true);
@@ -85,7 +92,7 @@ class KakaoSearchTest {
         double latitude = 37.4969397553084;
         double longitude = 126.953540835787;
         double radius = 3.0;
-        kakaoSearch.kakaoRestApiKey = "kakaoRestApiKey";
+//        kakaoSearch.kakaoRestApiKey = "kakaoRestApiKey";
 
         URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_CATEGORY_SEARCH_URL)
                 .queryParam("category_group_code", PUB_CATEGORY)
@@ -97,7 +104,7 @@ class KakaoSearchTest {
                 .build().encode().toUri();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoSearch.kakaoRestApiKey);
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
         HttpEntity httpEntity = new HttpEntity<>(headers);
 
         MetaDto restaurantsMetaDto = new MetaDto(7206, 45L, false);

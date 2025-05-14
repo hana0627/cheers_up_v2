@@ -1,5 +1,6 @@
-package com.hana.cheers_up.application.user.controller;
+package com.hana.cheers_up.unit.application.user.controller;
 
+import com.hana.cheers_up.application.user.controller.UserAccountController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
