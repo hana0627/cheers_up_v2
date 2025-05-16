@@ -59,9 +59,7 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
----
-
-spring:
-  config:
-    activate:
-      on-profile: prod
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  token:
+    expired-time-ms: ${JWT_EXPIRED_TIME}
