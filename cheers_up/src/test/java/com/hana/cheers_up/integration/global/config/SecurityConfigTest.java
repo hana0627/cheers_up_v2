@@ -2,21 +2,26 @@ package com.hana.cheers_up.integration.global.config;
 
 import com.hana.cheers_up.application.pub.dto.response.PubResponse;
 import com.hana.cheers_up.application.pub.service.PubService;
+import com.hana.cheers_up.application.user.domain.constant.RoleType;
+import com.hana.cheers_up.application.user.dto.UserAccountDto;
+import com.hana.cheers_up.global.config.CustomUserDetails;
+import com.hana.cheers_up.global.config.jwt.JwtUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -25,9 +30,12 @@ public class SecurityConfigTest {
     @Autowired
     private MockMvc mvc;
 
-
     @MockBean
     private PubService pubService;
+
+    @MockBean
+    private JwtUtils jwtUtils;
+
 
     @Test
     void permitAll_경로_허용() throws Exception {

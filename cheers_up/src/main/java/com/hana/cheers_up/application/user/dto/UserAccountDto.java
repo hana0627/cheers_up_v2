@@ -6,7 +6,6 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Builder
 public record UserAccountDto(
         String userId,
         String email,
