@@ -4,8 +4,9 @@ import com.hana.cheers_up.global.config.oauth2.provider.Oauth2UserInfo;
 import lombok.EqualsAndHashCode;
 
 import java.util.Map;
+import java.util.Objects;
 
-@EqualsAndHashCode
+//@EqualsAndHashCode
 public class KakaoUserInfo implements Oauth2UserInfo {
 
     private final Map<String, Object> attributes;
@@ -42,7 +43,6 @@ public class KakaoUserInfo implements Oauth2UserInfo {
         return "email";
     }
 
-    // TODO name 만들기
     @Override
     public String getName() {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
@@ -58,7 +58,6 @@ public class KakaoUserInfo implements Oauth2UserInfo {
     }
 
 
-    // TODO use ENUM
     @Override
     public String getGender() {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
@@ -82,7 +81,7 @@ public class KakaoUserInfo implements Oauth2UserInfo {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
 
         if (!kakaoAccount.containsKey("has_phone_number") || !kakaoAccount.containsKey("phone_number_needs_agreement")) {
-            return null;
+            return "unknown";
         }
 
         boolean hasPhoneNumber = (Boolean) kakaoAccount.get("has_phone_number");
@@ -92,6 +91,20 @@ public class KakaoUserInfo implements Oauth2UserInfo {
             return kakaoAccount.get("phone_number").toString();
         }
 
-        return null;
+        return "unknown";
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        KakaoUserInfo that = (KakaoUserInfo) o;
+        return Objects.equals(attributes, that.attributes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(attributes);
     }
 }
