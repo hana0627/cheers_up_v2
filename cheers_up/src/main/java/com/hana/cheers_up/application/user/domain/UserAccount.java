@@ -1,17 +1,13 @@
 package com.hana.cheers_up.application.user.domain;
 
 import com.hana.cheers_up.application.user.domain.constant.RoleType;
-import com.hana.cheers_up.application.user.domain.constant.RoleTypeConvertor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Entity
-@EqualsAndHashCode(callSuper = false)
 public class UserAccount extends AuditingFields {
 
     @Id
@@ -25,7 +21,7 @@ public class UserAccount extends AuditingFields {
     @Column(length = 100)
     private String memo; // 메모
 
-    @Convert(converter = RoleTypeConvertor.class)
+    @Enumerated(EnumType.STRING)
     private RoleType roleType; // 권한정보
 
     protected UserAccount() {
@@ -52,5 +48,15 @@ public class UserAccount extends AuditingFields {
         return new UserAccount(userId, email, nickname, memo, roleType, createdBy);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UserAccount that = (UserAccount) o;
+        return Objects.equals(userId, that.userId) && Objects.equals(email, that.email);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, email);
+    }
 }
