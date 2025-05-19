@@ -8,7 +8,7 @@ public class HomeController {
 
     @RequestMapping("/")
     public String home() {
-//        return "forward:/users/login";
+//        return "forward:/api/v1/users/login";
         return "index";
     }
 }

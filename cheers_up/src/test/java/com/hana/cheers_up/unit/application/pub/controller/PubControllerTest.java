@@ -59,7 +59,7 @@ class PubControllerTest {
         given(pubService.recommendPubs(address)).willReturn(pubs);
 
         // when & then
-        mvc.perform(get("/search").param("address", address))
+        mvc.perform(get("/api/v2/search").param("address", address))
                 .andExpect(status().isOk())
                 .andExpect(view().name("cheers/pub_list"))
                 .andExpect(model().attributeExists("pubs"))

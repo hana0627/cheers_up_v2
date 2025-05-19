@@ -25,21 +25,18 @@ public class JwtFilter extends OncePerRequestFilter {
     private final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    public boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String uri = request.getRequestURI();
 
         // 1) permitAll 경로
-        if (uri.equals("/") ||
-                uri.startsWith("/images/") ||
-                uri.startsWith("/.well-known/") ||
-                uri.startsWith("/users/login")) {
+        if (uri.equals("/") || uri.startsWith("/api/v1")) {
             return true;
         }
 
         // 2) 이미 인증된 사용자(테스트용 @WithMockUser 포함)
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() &&
-                !(auth instanceof AnonymousAuthenticationToken)) {
+        if (auth != null && auth.isAuthenticated()
+                && !(auth instanceof AnonymousAuthenticationToken)) {
             return true;
         }
 
@@ -47,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
+    public void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
@@ -56,20 +53,20 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (header == null || !header.startsWith("Bearer ")) {
             log.info("Missing or malformed Authorization header");
-            response.sendRedirect("users/login");
+            response.sendRedirect("/api/v1/users/login");
             return;
         }
         String token = header.substring(7).trim();
 
         if (jwtUtils.isInvalidated(token) || jwtUtils.isExpired(token)) {
             log.error("Invalid or expired token");
-            response.sendRedirect("users/login");
+            response.sendRedirect("/api/v1/users/login");
             return;
         }
 
-        String memberId = jwtUtils.getUserId(token);
+        String userId = jwtUtils.getUserId(token);
         UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(memberId, null, Collections.emptyList());
+                new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);

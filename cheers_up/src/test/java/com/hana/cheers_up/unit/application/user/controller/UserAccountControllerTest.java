@@ -24,7 +24,7 @@ class UserAccountControllerTest {
         // nothing
 
         //when & then
-        mvc.perform(get("/users/login"))
+        mvc.perform(get("/api/v1/users/login"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("/cheers/search"));
 

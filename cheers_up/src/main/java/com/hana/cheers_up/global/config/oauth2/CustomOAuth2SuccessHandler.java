@@ -30,6 +30,6 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 principal.getEmail(),
                 principal.getRoleType()
         );
-        response.sendRedirect("/users/login?token=" + jwtToken);
+        response.sendRedirect("/api/v1/users/login?token=" + jwtToken);
     }
 }

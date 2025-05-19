@@ -66,7 +66,7 @@ public class CustomOAuth2SuccessHandlerTest {
         then(jwtUtils).should().generateToken(userDetails.getName(), userDetails.getNickname(), userDetails.getEmail(), userDetails.getRoleType());
 
         assertThat(response.getStatus()).isEqualTo(302);
-        assertThat(response.getRedirectedUrl()).isEqualTo("/users/login?token=" + testToken);
+        assertThat(response.getRedirectedUrl()).isEqualTo("/api/v1/users/login?token=" + testToken);
 
 
     }
@@ -131,7 +131,7 @@ class CustomOAuth2SuccessHandlerTest {
 
         // 리디렉션 검증
         assertEquals(302, response.getStatus());
-        assertEquals("/users/login?token=" + expectedToken, response.getRedirectedUrl());
+        assertEquals("/api/v1/users/login?token=" + expectedToken, response.getRedirectedUrl());
     }
 
     @Test
@@ -162,7 +162,7 @@ class CustomOAuth2SuccessHandlerTest {
                 RoleType.ADMIN
         );
 
-        assertEquals("/users/login?token=" + expectedToken, response.getRedirectedUrl());
+        assertEquals("/api/v1/users/login?token=" + expectedToken, response.getRedirectedUrl());
     }
 
     @Test

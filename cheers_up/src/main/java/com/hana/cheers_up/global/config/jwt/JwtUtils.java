@@ -1,10 +1,13 @@
 package com.hana.cheers_up.global.config.jwt;
 
 import com.hana.cheers_up.application.user.domain.constant.RoleType;
+import com.hana.cheers_up.global.config.clock.TimeProvider;
+import com.hana.cheers_up.global.config.jwt.mac.MacProvider;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +20,10 @@ import java.util.Date;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class JwtUtils {
+    private final TimeProvider timeProvider;
+    private final MacProvider macProvider;
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -25,13 +31,13 @@ public class JwtUtils {
     @Value("${jwt.token.expired-time-ms}")
     private Long expiredMs;
 
+
+
     /**
      * 토큰생성
      */
     public String generateToken(String userId, String nickname, String email, RoleType roleType) {
-        if (secretKey == null || expiredMs == null) {
-            throw new NullPointerException("key 혹은 expiredMs가 존재하지 않습니다.");
-        }
+        verifySecretKeyAndExpiry();
 
         Claims claims = Jwts.claims();
         claims.put("userId", userId);
@@ -41,8 +47,8 @@ public class JwtUtils {
 
         return "Bearer " + Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
+                .setIssuedAt(new Date(timeProvider.getCurrentTime()))
+                .setExpiration(new Date(timeProvider.getCurrentTime() + expiredMs))
                 .signWith(getKey(secretKey), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -54,7 +60,7 @@ public class JwtUtils {
      */
     public boolean isExpired(String token) {
         Date expiredDate = extractClaims(token).getExpiration();
-        return expiredDate.before(new Date());
+        return expiredDate.before(new Date(timeProvider.getCurrentTime()));
     }
 
     /**
@@ -89,15 +95,14 @@ public class JwtUtils {
 
     // 헤더와 시그니처를 통하여 Signature 생성
     private String generateSignature(String headerAndClaims) {
-        if (secretKey == null || expiredMs == null) {
-            throw new NullPointerException("key 혹은 expiredMs가 존재하지 않습니다.");
-        }
+        verifySecretKeyAndExpiry();
 
         try {
             byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
-            Mac hmacSha256 = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, "HmacSHA256");
-            hmacSha256.init(secretKeySpec);
+
+            Mac hmacSha256 = macProvider.getMac("HmacSHA256", secretKeySpec);
+
             byte[] signatureBytes = hmacSha256.doFinal(headerAndClaims.getBytes(StandardCharsets.UTF_8));
             return Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
         } catch (Exception e) {
@@ -107,9 +112,7 @@ public class JwtUtils {
 
     // 토큰 claims 정보 추출
     private Claims extractClaims(String token) {
-        if (secretKey == null || expiredMs == null) {
-            throw new NullPointerException("key 혹은 expiredMs가 존재하지 않습니다.");
-        }
+        verifySecretKeyAndExpiry();
 
         return Jwts.parserBuilder()
                 .setSigningKey(getKey(secretKey))
@@ -123,5 +126,12 @@ public class JwtUtils {
     private Key getKey(String key) {
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+
+    private void verifySecretKeyAndExpiry() {
+        if (secretKey == null || expiredMs == null) {
+            throw new NullPointerException("key 혹은 expiredMs가 존재하지 않습니다.");
+        }
     }
 }

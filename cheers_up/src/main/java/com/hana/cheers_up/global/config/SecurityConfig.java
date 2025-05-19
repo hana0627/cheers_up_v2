@@ -32,11 +32,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .mvcMatchers(HttpMethod.GET,
-                                "/", "/index", "/users/login").permitAll()
+                                "/", "/index", "/api/v1/users/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/users/login")
+                        .loginPage("/api/v1/users/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )

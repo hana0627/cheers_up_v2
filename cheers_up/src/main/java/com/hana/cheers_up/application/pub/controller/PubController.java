@@ -19,7 +19,7 @@ public class PubController {
 //    private final KakaoSearchService kakaoSearchService;
     private final PubService pubService;
 
-    @GetMapping("/search")
+    @GetMapping("/api/v2/search")
     public String CheersSearch(@RequestParam("address") String address, Model model) {
         log.info("[CheersController CheersSearch] - called");
 

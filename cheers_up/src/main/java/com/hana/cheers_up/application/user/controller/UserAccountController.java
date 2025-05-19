@@ -11,7 +11,7 @@ public class UserAccountController {
 
 //    private final UserAccountService userAccountService;
 
-    @RequestMapping("/users/login")
+    @RequestMapping("/api/v1/users/login")
     public String login() {
         log.info("[UserAccountController login]");
         return "/cheers/search";

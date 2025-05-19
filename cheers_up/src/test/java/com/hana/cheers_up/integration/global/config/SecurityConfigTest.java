@@ -51,9 +51,9 @@ public class SecurityConfigTest {
         //given
 
         //when & then
-        mvc.perform(get("/api/protected"))
+        mvc.perform(get("/api/v2/search"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/api/v1/users/login"));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class SecurityConfigTest {
         given(pubService.recommendPubs(address)).willReturn(pubs);
 
         //when & then
-        mvc.perform(get("/search").param("address", address))
+        mvc.perform(get("/api/v2/search").param("address", address))
                 .andExpect(status().isOk());
     }
 }
