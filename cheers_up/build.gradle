@@ -80,6 +80,17 @@ tasks.jacocoTestReport {
         html.destination(file("build/jacoco/jacoco.html"))
     }
 
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    excludes: [
+                            '**/CheersUpApplication.class',
+                            '**/CheersUpApplication$*.class'
+                    ])
+        }))
+    }
+
+
     finalizedBy(tasks.jacocoTestCoverageVerification)
 }
 
