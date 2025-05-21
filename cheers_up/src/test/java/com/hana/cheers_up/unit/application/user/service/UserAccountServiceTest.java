@@ -14,11 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -91,6 +93,24 @@ class UserAccountServiceTest {
 
         assertThat(result).isEqualTo(testToken);
 
+    }
+
+
+
+    @Test
+    void 로그인시도중_일치하는_id가_없으면_EntityNotFoundException이_발생한다() {
+        //given
+        String testToken = "thisistesttoken";
+
+        UserAccountDto userAccountDto = UserAccountDto.of("wrongUserId", "hanana9506@naver.com", "공주하나", "신세경닮음", RoleType.USER);
+        UserAccount userAccount = userAccountDto.toEntity();
+        given(userAccountRepository.findById(userAccountDto.userId())).willReturn(Optional.empty());
+
+        //when
+        EntityNotFoundException result = assertThrows(EntityNotFoundException.class, () -> userAccountService.login(userAccountDto));
+
+        //then
+        then(userAccountRepository).should().findById(userAccountDto.userId());
     }
 
 
