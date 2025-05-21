@@ -1,32 +1,24 @@
-package com.hana.cheers_up.global.config;
+package com.hana.cheers_up.mock;
 
 import com.hana.cheers_up.global.config.jwt.JwtFilter;
 import com.hana.cheers_up.global.config.jwt.JwtUtils;
-import com.hana.cheers_up.global.config.oauth2.CustomOAuth2SuccessHandler;
-import com.hana.cheers_up.global.config.oauth2.CustomOAuth2UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration
+@TestConfiguration
 @EnableWebSecurity
-@RequiredArgsConstructor
-public class SecurityConfig {
-
-    private final JwtUtils jwtUtils;
-    private final CustomOAuth2UserService oAuth2UserService;
-    private final CustomOAuth2SuccessHandler oAuth2SuccessHandler;
+public class TestSecurityConfig {
 
     @Value("${jwt.secret-key}")
     private String secretKey;
 
-    @Bean
+    @Bean(name = "testSecurityFilterChain")
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
@@ -35,14 +27,9 @@ public class SecurityConfig {
                                 "/", "/index", "/api/v1/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/api/v1/users/login")
-                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                        .successHandler(oAuth2SuccessHandler)
-                )
+                .oauth2Login(oauth2 -> oauth2.disable())
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
-                .addFilterBefore(new JwtFilter(secretKey, jwtUtils), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }
