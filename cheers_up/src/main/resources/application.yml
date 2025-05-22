@@ -63,3 +63,7 @@ jwt:
   secret-key: ${JWT_SECRET_KEY}
   token:
     expired-time-ms: ${JWT_EXPIRED_TIME}
+
+app:
+  frontend:
+    url: ${FRONT_END_URL}

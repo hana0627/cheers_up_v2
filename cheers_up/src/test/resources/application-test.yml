@@ -38,3 +38,7 @@ jwt:
   secret-key: testjwtsecretkey1234567890987654321
   token:
     expired-time-ms: 88888888888888
+
+app:
+  frontend:
+    url: http://localhost:3000
