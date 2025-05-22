@@ -48,7 +48,7 @@ class JpaConfigTest {
 
         userDetails = new CustomUserDetails(userAccountDto);
 
-        Authentication authentication = new TestingAuthenticationToken(userDetails, null, "ROLE_USER");
+        Authentication authentication = new TestingAuthenticationToken(userDetails, null, "USER");
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
