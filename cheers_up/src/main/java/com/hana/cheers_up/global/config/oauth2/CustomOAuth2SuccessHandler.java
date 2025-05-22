@@ -2,6 +2,7 @@ package com.hana.cheers_up.global.config.oauth2;
 
 import com.hana.cheers_up.global.config.CustomUserDetails;
 import com.hana.cheers_up.global.config.jwt.JwtUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,8 @@ import java.io.IOException;
 
 @Component
 public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler {
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     private final JwtUtils jwtUtils;
 
@@ -30,6 +33,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 principal.getEmail(),
                 principal.getRoleType()
         );
-        response.sendRedirect("/api/v1/users/login?token=" + jwtToken);
+
+        String redirectUrl = frontendUrl + "?token=" + jwtToken;
+        response.sendRedirect(redirectUrl);
     }
 }

@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-
 @Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,18 +20,18 @@ public class UserAccountService {
     private final UserAccountRepository userAccountRepository;
     private final JwtUtils jwtUtils;
 
-    public String login(UserAccountDto userAccountDto) {
-        UserAccount foundUser = userAccountRepository.findById(userAccountDto.userId()).orElseThrow(() -> new EntityNotFoundException());
-
-        // 토큰생성
-        return jwtUtils.generateToken(
-                foundUser.getUserId(),
-                foundUser.getNickname(),
-                foundUser.getEmail(),
-                foundUser.getRoleType()
-        );
-
-    }
+//    public String login(String userId) {
+//        UserAccount foundUser = userAccountRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException());
+//
+//        // 토큰생성
+//        return jwtUtils.generateToken(
+//                foundUser.getUserId(),
+//                foundUser.getNickname(),
+//                foundUser.getEmail(),
+//                foundUser.getRoleType()
+//        );
+//
+//    }
 
 
     /**

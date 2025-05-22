@@ -1,6 +1,5 @@
 package com.hana.cheers_up.unit.application.pub.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hana.cheers_up.application.pub.controller.PubController;
 import com.hana.cheers_up.application.pub.dto.response.PubResponse;
 import com.hana.cheers_up.application.pub.service.PubService;
@@ -8,13 +7,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(PubController.class)
@@ -22,9 +25,6 @@ class PubControllerTest {
 
     @Autowired
     private MockMvc mvc;
-
-    @Autowired
-    private ObjectMapper om;
 
     @MockBean
     private PubService pubService;
@@ -61,9 +61,16 @@ class PubControllerTest {
         // when & then
         mvc.perform(get("/api/v2/search").param("address", address))
                 .andExpect(status().isOk())
-                .andExpect(view().name("cheers/pub_list"))
-                .andExpect(model().attributeExists("pubs"))
-                .andExpect(model().attribute("pubs", pubs));
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.resultCode").value(HttpStatus.OK.name()))
+                .andExpect(jsonPath("$.result").isArray())
+                .andExpect(jsonPath("$.result.length()").value(pubs.size()))
+                .andExpect(jsonPath("$.result[0].pubName").value(pubs.get(0).pubName()))
+                .andExpect(jsonPath("$.result[0].pubAddress").value(pubs.get(0).pubAddress()))
+                .andExpect(jsonPath("$.result[1].pubName").value(pubs.get(1).pubName()))
+                .andExpect(jsonPath("$.result[2].pubName").value(pubs.get(2).pubName()))
+                .andDo(print());
+        then(pubService).should().recommendPubs(address);
     }
 
 

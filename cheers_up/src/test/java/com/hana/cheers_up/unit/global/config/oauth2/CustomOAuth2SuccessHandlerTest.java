@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,9 @@ public class CustomOAuth2SuccessHandlerTest {
     private CustomUserDetails userDetails;
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
+
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     @BeforeEach
     void setUp() {
@@ -66,7 +70,7 @@ public class CustomOAuth2SuccessHandlerTest {
         then(jwtUtils).should().generateToken(userDetails.getName(), userDetails.getNickname(), userDetails.getEmail(), userDetails.getRoleType());
 
         assertThat(response.getStatus()).isEqualTo(302);
-        assertThat(response.getRedirectedUrl()).isEqualTo("/api/v1/users/login?token=" + testToken);
+        assertThat(response.getRedirectedUrl()).isEqualTo(frontendUrl+"?token=" + testToken);
 
 
     }

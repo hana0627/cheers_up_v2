@@ -2,7 +2,6 @@ package com.hana.cheers_up.application.user.dto;
 
 import com.hana.cheers_up.application.user.domain.UserAccount;
 import com.hana.cheers_up.application.user.domain.constant.RoleType;
-import lombok.Builder;
 
 import java.time.LocalDateTime;
 
@@ -42,16 +41,16 @@ public record UserAccountDto(
     }
 
 
-    public UserAccount toEntity() {
-        return UserAccount.of(
-                userId,
-                email,
-                nickname,
-                memo,
-                roleType,
-                createdBy
-        );
-    }
+//    public UserAccount toEntity() {
+//        return UserAccount.of(
+//                userId,
+//                email,
+//                nickname,
+//                memo,
+//                roleType,
+//                createdBy
+//        );
+//    }
 
 //    @Component
 //    public class UserRequestMapper {
