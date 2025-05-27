@@ -16,9 +16,10 @@ class KakaoUriBuilderTest {
 
     @InjectMocks
     private KakaoUriBuilder kakaoUriBuilder;
+    private static final String KAKAO_SEARCH_KEYWORD = "맥주";
     private static final String PUB_CATEGORY = "FD6";
     private static final String KAKAO_LOCAL_SEARCH_ADDRESS_URL = "https://dapi.kakao.com/v2/local/search/address.json";
-    private static final String KAKAO_CATEGORY_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/category.json";
+    private static final String KAKAO_KEYWORD_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/keyword.json";
 
     @Test
     void 주소를_좌표로_변환하는_URI를_생성한다() {
@@ -48,7 +49,8 @@ class KakaoUriBuilderTest {
         double radius = 3.0;
 
 
-        URI expectedUri = UriComponentsBuilder.fromHttpUrl(KAKAO_CATEGORY_SEARCH_URL)
+        URI expectedUri = UriComponentsBuilder.fromHttpUrl(KAKAO_KEYWORD_SEARCH_URL)
+                .queryParam("query",KAKAO_SEARCH_KEYWORD)
                 .queryParam("category_group_code", PUB_CATEGORY)
                 .queryParam("x", longitude)
                 .queryParam("y", latitude)
@@ -61,7 +63,7 @@ class KakaoUriBuilderTest {
 
 
         //when
-        URI result = kakaoUriBuilder.buildUriByCategorySearch(latitude, longitude, radius, PUB_CATEGORY, 1);
+        URI result = kakaoUriBuilder.buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, 1);
 
         //then
         assertThat(result).isNotNull();

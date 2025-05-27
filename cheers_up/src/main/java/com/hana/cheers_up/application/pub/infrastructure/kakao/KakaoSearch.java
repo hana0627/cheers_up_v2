@@ -46,7 +46,7 @@ public class KakaoSearch {
 
 
     public KakaoResponse getRestaurantsByLocation(double latitude, double longitude, double radius, int page) {
-        URI uri = kakaoUriBuilder.buildUriByCategorySearch(latitude, longitude, radius, PUB_CATEGORY, page);
+        URI uri = kakaoUriBuilder.buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, page);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);

@@ -2,7 +2,6 @@ package com.hana.cheers_up.application.pub.infrastructure.kakao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -11,8 +10,9 @@ import java.net.URI;
 @Component
 public class KakaoUriBuilder {
 
+    private static final String KAKAO_SEARCH_KEYWORD = "맥주";
     private static final String KAKAO_LOCAL_SEARCH_ADDRESS_URL = "https://dapi.kakao.com/v2/local/search/address.json";
-    private static final String KAKAO_CATEGORY_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/category.json";
+    private static final String KAKAO_KEYWORD_SEARCH_URL = "https://dapi.kakao.com/v2/local/search/keyword.json";
 
     public URI buildUriByAddressSearch(String address) {
 
@@ -25,9 +25,10 @@ public class KakaoUriBuilder {
 
     }
 
-    public URI buildUriByCategorySearch(double latitude, double longitude, double radius, String category, int page) {
+    public URI buildUriByKeywordSearch(double latitude, double longitude, double radius, String category, int page) {
         double meterRadius = radius* 1000;
-        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_CATEGORY_SEARCH_URL)
+        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_KEYWORD_SEARCH_URL)
+                .queryParam("query",KAKAO_SEARCH_KEYWORD)
                 .queryParam("category_group_code", category)
                 .queryParam("x", longitude)
                 .queryParam("y", latitude)
@@ -36,7 +37,7 @@ public class KakaoUriBuilder {
                 .queryParam("page",page)
                 .build().encode().toUri();
 
-        log.info("[KakaoUriBuilderService buildUriByCategorySearch] uri: {}", uri);
+        log.info("[KakaoUriBuilderService buildUriByKeywordSearch] uri: {}", uri);
         return uri;
     }
 }

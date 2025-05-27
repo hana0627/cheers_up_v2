@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -112,7 +111,7 @@ class KakaoSearchTest {
         KakaoResponse restaurants = new KakaoResponse(restaurantsMetaDto, restaurantsDocumentList);
 
 
-        given(kakaoUriBuilder.buildUriByCategorySearch(latitude, longitude, radius, PUB_CATEGORY, 1)).willReturn(uri);
+        given(kakaoUriBuilder.buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, 1)).willReturn(uri);
         given(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class))
                 .willReturn(new ResponseEntity<>(restaurants, HttpStatus.OK));
 
@@ -120,7 +119,7 @@ class KakaoSearchTest {
         KakaoResponse result = kakaoSearch.getRestaurantsByLocation(latitude, longitude, radius, 1);
 
         // then
-        then(kakaoUriBuilder).should().buildUriByCategorySearch(latitude, longitude, radius, PUB_CATEGORY, 1);
+        then(kakaoUriBuilder).should().buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, 1);
         then(restTemplate).should().exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class);
 
         assertThat(result).isEqualTo(restaurants);
