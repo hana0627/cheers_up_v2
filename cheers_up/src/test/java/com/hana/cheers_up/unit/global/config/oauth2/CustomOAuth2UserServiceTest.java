@@ -8,6 +8,8 @@ import com.hana.cheers_up.global.config.oauth2.CustomOAuth2UserService;
 import com.hana.cheers_up.global.config.oauth2.provider.impl.KakaoUserInfo;
 import com.hana.cheers_up.global.config.oauth2.userloader.OAuth2UserLoader;
 import com.hana.cheers_up.global.config.oauth2.userloader.impl.DefaultOAuth2UserLoader;
+import com.hana.cheers_up.global.exception.ApplicationException;
+import com.hana.cheers_up.global.exception.constant.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -147,9 +149,10 @@ public class CustomOAuth2UserServiceTest {
         userRequest = null;
 
         //when
-        IllegalStateException result = assertThrows(IllegalStateException.class, () -> customOAuth2UserService.loadUser(userRequest));
+        ApplicationException result = assertThrows(ApplicationException.class, () -> customOAuth2UserService.loadUser(userRequest));
 
         //then
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.NULL_USER_REQUEST);
         assertThat(result.getMessage()).contains("userRequest is null");
     }
 
@@ -161,11 +164,12 @@ public class CustomOAuth2UserServiceTest {
         given(oAuth2UserLoader.loadUser(userRequest)).willReturn(oAuth2User);
 
         //when
-        IllegalStateException result = assertThrows(IllegalStateException.class, () -> customOAuth2UserService.loadUser(userRequest));
+        ApplicationException result = assertThrows(ApplicationException.class, () -> customOAuth2UserService.loadUser(userRequest));
 
         //then
         then(userRequest).should().getClientRegistration();
         then(oAuth2UserLoader).should().loadUser(userRequest);
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.UNSUPPORTED_LOGIN_TYPE);
         assertThat(result.getMessage()).contains("지원하지 않는 로그인 타입입니다.");
     }
 

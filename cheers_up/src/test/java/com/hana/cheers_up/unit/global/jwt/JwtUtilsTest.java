@@ -4,6 +4,8 @@ import com.hana.cheers_up.application.user.domain.constant.RoleType;
 import com.hana.cheers_up.global.config.clock.TimeProvider;
 import com.hana.cheers_up.global.config.jwt.JwtUtils;
 import com.hana.cheers_up.global.config.jwt.mac.MacProvider;
+import com.hana.cheers_up.global.exception.ApplicationException;
+import com.hana.cheers_up.global.exception.constant.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,9 +83,10 @@ public class JwtUtilsTest {
         ReflectionTestUtils.setField(jwtUtils, "expiredMs", null);
 
         //when
-        NullPointerException result = assertThrows(NullPointerException.class, () -> jwtUtils.generateToken(userId, nickname, email, roleType));
+        ApplicationException result = assertThrows(ApplicationException.class, () -> jwtUtils.generateToken(userId, nickname, email, roleType));
 
         //then
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.JWT_SECRET_KEY_NOT_CONFIGURED);
         assertThat(result.getMessage()).isEqualTo("key 혹은 expiredMs가 존재하지 않습니다.");
     }
 
@@ -94,9 +97,10 @@ public class JwtUtilsTest {
         ReflectionTestUtils.setField(jwtUtils, "expiredMs", null);
 
         //when
-        NullPointerException result = assertThrows(NullPointerException.class, () -> jwtUtils.generateToken(userId, nickname, email, roleType));
+        ApplicationException result = assertThrows(ApplicationException.class, () -> jwtUtils.generateToken(userId, nickname, email, roleType));
 
         //then
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.JWT_SECRET_KEY_NOT_CONFIGURED);
         assertThat(result.getMessage()).isEqualTo("key 혹은 expiredMs가 존재하지 않습니다.");
     }
 
@@ -107,9 +111,10 @@ public class JwtUtilsTest {
         ReflectionTestUtils.setField(jwtUtils, "secretKey", null);
 
         //when
-        NullPointerException result = assertThrows(NullPointerException.class, () -> jwtUtils.generateToken(userId, nickname, email, roleType));
+        ApplicationException result = assertThrows(ApplicationException.class, () -> jwtUtils.generateToken(userId, nickname, email, roleType));
 
         //then
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.JWT_SECRET_KEY_NOT_CONFIGURED);
         assertThat(result.getMessage()).isEqualTo("key 혹은 expiredMs가 존재하지 않습니다.");
     }
 
@@ -202,11 +207,12 @@ public class JwtUtilsTest {
 
         String testToken = token;
         //when
-        IllegalArgumentException result = assertThrows(IllegalArgumentException.class, () -> jwtUtils.isInvalidated(testToken));
+        ApplicationException result = assertThrows(ApplicationException.class, () -> jwtUtils.isInvalidated(testToken));
 
         //then
         then(timeProvider).should(times(2)).getCurrentTime();
 
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.INVALID_TOKEN_FORMAT);
         assertThat(result.getMessage()).isEqualTo("토큰 형식이 올바르지 않습니다.");
     }
 

@@ -3,6 +3,8 @@ package com.hana.cheers_up.global.config.jwt;
 import com.hana.cheers_up.application.user.domain.constant.RoleType;
 import com.hana.cheers_up.global.config.clock.TimeProvider;
 import com.hana.cheers_up.global.config.jwt.mac.MacProvider;
+import com.hana.cheers_up.global.exception.ApplicationException;
+import com.hana.cheers_up.global.exception.constant.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -81,7 +83,7 @@ public class JwtUtils {
         // 토큰을 (Header, Payload, Signature)으로 분할
         List<String> chunks = List.of(token.split("\\."));
         if (chunks.size() != 3) {
-            throw new IllegalArgumentException("토큰 형식이 올바르지 않습니다.");
+            throw new ApplicationException(ErrorCode.INVALID_TOKEN_FORMAT, "토큰 형식이 올바르지 않습니다.");
         }
         // 시그니처 추출
         String signature = chunks.get(2);
@@ -106,7 +108,8 @@ public class JwtUtils {
             byte[] signatureBytes = hmacSha256.doFinal(headerAndClaims.getBytes(StandardCharsets.UTF_8));
             return Base64.getUrlEncoder().withoutPadding().encodeToString(signatureBytes);
         } catch (Exception e) {
-            throw new RuntimeException("시그니처 생성 중 오류 발생", e);
+
+            throw new ApplicationException(ErrorCode.JWT_SIGNATURE_GENERATION_FAILED, "시그니처 생성 중 오류 발생");
         }
     }
 
@@ -131,7 +134,7 @@ public class JwtUtils {
 
     private void verifySecretKeyAndExpiry() {
         if (secretKey == null || expiredMs == null) {
-            throw new NullPointerException("key 혹은 expiredMs가 존재하지 않습니다.");
+            throw new ApplicationException(ErrorCode.JWT_SECRET_KEY_NOT_CONFIGURED,"key 혹은 expiredMs가 존재하지 않습니다.");
         }
     }
 }

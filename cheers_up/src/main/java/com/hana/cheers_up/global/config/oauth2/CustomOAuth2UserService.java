@@ -6,6 +6,8 @@ import com.hana.cheers_up.global.config.oauth2.provider.Oauth2UserInfo;
 import com.hana.cheers_up.global.config.oauth2.provider.impl.KakaoUserInfo;
 import com.hana.cheers_up.global.config.CustomUserDetails;
 import com.hana.cheers_up.global.config.oauth2.userloader.OAuth2UserLoader;
+import com.hana.cheers_up.global.exception.ApplicationException;
+import com.hana.cheers_up.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -22,7 +24,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public CustomUserDetails loadUser(OAuth2UserRequest userRequest) {
         if(userRequest == null) {
-            throw new IllegalStateException("userRequest is null");
+            throw new ApplicationException(ErrorCode.NULL_USER_REQUEST, "userRequest is null");
         }
 
         OAuth2User oAuth2User = oAuth2UserLoader.loadUser(userRequest);
@@ -36,7 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             oauth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
         }
         if(oauth2UserInfo == null) {
-            throw new IllegalStateException("지원하지 않는 로그인 타입입니다.");
+            throw new ApplicationException(ErrorCode.UNSUPPORTED_LOGIN_TYPE, "지원하지 않는 로그인 타입입니다.");
         }
 
         String providerId = String.valueOf(oauth2UserInfo.getProviderId()); // 카카오 스펙에서의 Long타입의 id값

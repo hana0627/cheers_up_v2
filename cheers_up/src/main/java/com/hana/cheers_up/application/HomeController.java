@@ -1,14 +1,13 @@
 package com.hana.cheers_up.application;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class HomeController {
 
     @RequestMapping("/")
     public String home() {
-//        return "forward:/api/v1/users/login";
-        return "index";
+        return "hello this is Spring Server";
     }
 }
