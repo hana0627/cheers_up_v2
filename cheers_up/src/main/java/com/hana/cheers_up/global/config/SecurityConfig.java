@@ -33,8 +33,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .mvcMatchers(HttpMethod.GET,
-                                "/", "/index", "/api/v1/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/", "/index").permitAll()
+                        .requestMatchers("/api/v1/**").permitAll()
+                        .requestMatchers("/api/v2/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2

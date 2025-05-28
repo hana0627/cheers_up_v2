@@ -14,12 +14,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -41,7 +40,7 @@ public class JwtUtils {
     public String generateToken(String userId, String nickname, String email, RoleType roleType) {
         verifySecretKeyAndExpiry();
 
-        Claims claims = Jwts.claims();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("nickname", nickname);
         claims.put("email", email);
@@ -117,16 +116,16 @@ public class JwtUtils {
     private Claims extractClaims(String token) {
         verifySecretKeyAndExpiry();
 
-        return Jwts.parserBuilder()
-                .setSigningKey(getKey(secretKey))
+        return Jwts.parser()
+                .verifyWith(getKey(secretKey))
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
 
     // 서명키 생성
-    private Key getKey(String key) {
+    private SecretKey getKey(String key) {
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }

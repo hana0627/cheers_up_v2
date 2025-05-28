@@ -3,7 +3,7 @@ package com.hana.cheers_up.application.user.domain;
 import com.hana.cheers_up.application.user.domain.constant.RoleType;
 import lombok.Getter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Objects;
 
 @Getter

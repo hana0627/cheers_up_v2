@@ -23,7 +23,7 @@ public class TestSecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .mvcMatchers(HttpMethod.GET,
+                        .requestMatchers(HttpMethod.GET,
                                 "/", "/index", "/api/v1/**").permitAll()
                         .anyRequest().authenticated()
                 )

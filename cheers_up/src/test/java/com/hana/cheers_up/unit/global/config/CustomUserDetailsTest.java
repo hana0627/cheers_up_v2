@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,13 +23,13 @@ public class CustomUserDetailsTest {
 
     @InjectMocks
     private CustomUserDetails userDetails;
-    @MockBean
+    @MockitoBean
     private UserAccountDto userAccountDto;
 
     @BeforeEach
     void setUp() {
         userAccountDto = UserAccountDto.of("kakao_1234567890", "hanana9506@naver.com", "공주하나", "신세경닮음", RoleType.USER);
-        userDetails = new CustomUserDetails(userAccountDto); // 👈 생성자 직접 사용
+        userDetails = new CustomUserDetails(userAccountDto);
     };
 
     @Test
