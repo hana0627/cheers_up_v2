@@ -3,6 +3,8 @@ package com.hana.cheers_up.unit.application.pub.controller;
 import com.hana.cheers_up.application.pub.controller.PubController;
 import com.hana.cheers_up.application.pub.dto.response.PubResponse;
 import com.hana.cheers_up.application.pub.service.PubService;
+import com.hana.cheers_up.global.exception.ApplicationException;
+import com.hana.cheers_up.global.exception.constant.ErrorCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -73,5 +75,42 @@ class PubControllerTest {
         then(pubService).should().recommendPubs(address);
     }
 
+
+    @Test
+    @WithMockUser(username = "user", roles = "USER")  // 인증된 사용자로 설정
+    void 카카오_주소검색_실패시_예외가_발생한다() throws Exception {
+        // given
+        String address = "서울 동작구 상도로 357";
+
+        given(pubService.recommendPubs(address)).willThrow(new ApplicationException(ErrorCode.KAKAO_API_ERROR, ErrorCode.KAKAO_API_ERROR.getMessage()));
+
+        // when & then
+        mvc.perform(get("/api/v2/search").param("address", address))
+                .andExpect(status().is5xxServerError())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.resultCode").value(ErrorCode.KAKAO_API_ERROR.getStatus().name()))
+                .andExpect(jsonPath("$.result").value(ErrorCode.KAKAO_API_ERROR.getMessage()))
+                .andDo(print());
+
+        then(pubService).should().recommendPubs(address);
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = "USER")
+    void 카카오_주소검색시_예상하지_못한_예외가_발생할_수_있다() throws Exception {
+        // given
+        String address = "서울 동작구 상도로 357";
+
+        // RestTemplate 내부에서 발생할 수 있는 예외
+        given(pubService.recommendPubs(address))
+                .willThrow(new org.springframework.web.client.RestClientException("Connection reset"));
+
+        // when & then
+        mvc.perform(get("/api/v2/search").param("address", address))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.resultCode").value("INTERNAL_SERVER_ERROR"))
+                .andExpect(jsonPath("$.result").value("알 수 없는 예외가 발생했습니다."))
+                .andDo(print());
+    }
 
 }

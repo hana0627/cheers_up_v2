@@ -14,12 +14,11 @@ public class APIResponse<T> {
         this.result = result;
     }
 
-    public static APIResponse<String> error(RuntimeException error) {
+    public static APIResponse<String> error(Exception error) {
         if (error instanceof ApplicationException appError) {
             return new APIResponse<>(appError.getErrorCode().getStatus().name(), error.getMessage());
-        } else {
-            return new APIResponse<>(INTERNAL_SERVER_ERROR.name(), "알 수 없는 예외가 발생했습니다.");
         }
+        return new APIResponse<>(INTERNAL_SERVER_ERROR.name(), "알 수 없는 예외가 발생했습니다.");
     }
 
     public String getResultCode() {

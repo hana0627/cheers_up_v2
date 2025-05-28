@@ -4,7 +4,8 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum ErrorCode {
+public enum
+ErrorCode {
     SAMPLE_ERROR_CODE(HttpStatus.INTERNAL_SERVER_ERROR, "예시용 에러코드 입니다."),
 
     INVALID_TOKEN_FORMAT(HttpStatus.BAD_REQUEST, "토큰 형식이 올바르지 않습니다."),
@@ -15,7 +16,15 @@ public enum ErrorCode {
     NULL_USER_REQUEST(HttpStatus.BAD_REQUEST,"userRequest가 null 입니다."),
 
 
-    ;
+    // 카카오 관련
+    KAKAO_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 API호출 중 예상하지 못한 예외가 발생했습니다."),
+    KAKAO_CLIENT_ERROR(HttpStatus.BAD_REQUEST, "카카오 클라이언트 오류"),
+    KAKAO_UNAUTHORIZED_ERROR(HttpStatus.UNAUTHORIZED, "카카오 통신 권한 없음"),
+    KAKAO_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "카카오 서버 오류"),
+    KAKAO_RESPONSE_EMPTY(HttpStatus.NO_CONTENT, "카카오 API 응답이 비어있습니다"),
+
+    // 네트워크 관련
+    NETWORK_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "네트워크 연결에 문제가 발생했습니다");
 
     private final HttpStatus status;
     private final String message;

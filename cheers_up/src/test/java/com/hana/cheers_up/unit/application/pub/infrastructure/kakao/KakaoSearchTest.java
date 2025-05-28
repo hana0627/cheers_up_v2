@@ -1,11 +1,15 @@
 package com.hana.cheers_up.unit.application.pub.infrastructure.kakao;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.KakaoSearch;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.KakaoUriBuilder;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.DocumentDto;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.KakaoResponse;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.MetaDto;
+import com.hana.cheers_up.global.exception.ApplicationException;
+import com.hana.cheers_up.global.exception.constant.ErrorCode;
+import com.hana.cheers_up.global.exception.kakao.KakaoErrorResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,18 +17,22 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
-//@TestPropertySource(properties = "kakao.rest.api.key=kakaoRestApiKey")
 class KakaoSearchTest {
 
     @InjectMocks
@@ -33,6 +41,8 @@ class KakaoSearchTest {
     @Value("${kakao.rest.api.key}")
     private String kakaoRestApiKey;
 
+    @Mock
+    private ObjectMapper om;
 
     @Mock
     private RestTemplate restTemplate;
@@ -52,7 +62,6 @@ class KakaoSearchTest {
         String address = "서울 동작구 상도로 357";
         double latitude = 37.4969397553084;
         double longitude = 126.953540835787;
-//        kakaoSearch.kakaoRestApiKey = "kakaoRestApiKey";
 
         URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL)
                 .queryParam("query", address)
@@ -82,6 +91,149 @@ class KakaoSearchTest {
         assertThat(result).isEqualTo(coordinate);
         assertThat(result.metaDto()).isEqualTo(coordiateMetaDto);
         assertThat(result.documentDtos()).isEqualTo(coordinateDocumentDtoList);
+    }
+
+
+    @Test
+    void 좌표검색_결과과_null이면_예외가_발생한다() {
+        // given
+        String address = "서울 동작구 상도로 357";
+
+        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL)
+                .queryParam("query", address)
+                .build()
+                .encode()
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
+        HttpEntity httpEntity = new HttpEntity<>(headers);
+
+        given(kakaoUriBuilder.buildUriByAddressSearch(address)).willReturn(uri);
+        given(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class))
+                .willReturn(new ResponseEntity<>(null, HttpStatus.OK));
+
+        // when
+        ApplicationException result = assertThrows(ApplicationException.class, () -> kakaoSearch.getCoordinatesByAddress(address));
+
+        // then
+        then(kakaoUriBuilder).should().buildUriByAddressSearch(address);
+        then(restTemplate).should().exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class);
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.KAKAO_RESPONSE_EMPTY);
+        assertThat(result.getMessage()).isEqualTo("카카오 좌표검색 결과가 없습니다.");
+    }
+
+    @Test
+    void 잘못된_정보로_카카오_좌표검색시_예외가_반환된다() throws Exception {
+        //given
+        String address = "서울 동작구 상도로 357";
+
+        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL)
+                .queryParam("query", address)
+                .build()
+                .encode()
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
+        HttpEntity httpEntity = new HttpEntity<>(headers);
+
+        String kakaoErrorResponseBody = """
+                {
+                  "code": -6,
+                  "msg": "허용되지 않는 요청입니다."
+                }
+                """;
+        HttpServerErrorException kakaoError = new HttpServerErrorException(
+                HttpStatus.UNAUTHORIZED,
+                "Internal Server Error",
+                kakaoErrorResponseBody.getBytes(),
+                StandardCharsets.UTF_8
+        );
+
+        KakaoErrorResponse kakaoErrorResponse = new KakaoErrorResponse(-6, "허용되지 않는 요청입니다.");
+
+
+        given(kakaoUriBuilder.buildUriByAddressSearch(address)).willReturn(uri);
+        given(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class))
+                .willThrow(kakaoError);
+        given(om.readValue(kakaoErrorResponseBody, KakaoErrorResponse.class))
+                .willReturn(kakaoErrorResponse);
+
+        //when
+        ApplicationException result = assertThrows(ApplicationException.class, () -> kakaoSearch.getCoordinatesByAddress(address));
+
+        //then
+        then(kakaoUriBuilder).should().buildUriByAddressSearch(address);
+        then(restTemplate).should().exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class);
+        then(om).should().readValue(kakaoErrorResponseBody, KakaoErrorResponse.class);
+
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.KAKAO_UNAUTHORIZED_ERROR);
+        assertThat(result.getMessage()).isEqualTo("ErrorCode[-6] 허용되지 않는 요청입니다.");
+    }
+
+    @Test
+    void 카카오좌표검색중_네트워크로인한_예외가_발생할_수_있다() throws Exception {
+        //given
+        String address = "서울 동작구 상도로 357";
+
+        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL)
+                .queryParam("query", address)
+                .build()
+                .encode()
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
+        HttpEntity httpEntity = new HttpEntity<>(headers);
+
+        ResourceAccessException error = new ResourceAccessException("네트워크예외");
+
+        given(kakaoUriBuilder.buildUriByAddressSearch(address)).willReturn(uri);
+        given(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class))
+                .willThrow(error);
+
+        //when
+        ApplicationException result = assertThrows(ApplicationException.class, () -> kakaoSearch.getCoordinatesByAddress(address));
+
+        //then
+        then(kakaoUriBuilder).should().buildUriByAddressSearch(address);
+        then(restTemplate).should().exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class);
+
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.NETWORK_ERROR);
+        assertThat(result.getMessage()).isEqualTo("카카오 API 네트워크 연결 실패");
+    }
+
+    @Test
+    void 카카오좌표검색중_예상치못한_예외가_발생할_수_있다() throws Exception {
+        //given
+        String address = "서울 동작구 상도로 357";
+
+        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL)
+                .queryParam("query", address)
+                .build()
+                .encode()
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
+        HttpEntity httpEntity = new HttpEntity<>(headers);
+
+        NullPointerException error = new NullPointerException("알 수 없는 예외");
+
+        given(kakaoUriBuilder.buildUriByAddressSearch(address)).willReturn(uri);
+        given(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class))
+                .willThrow(error);
+
+        //when
+        ApplicationException result = assertThrows(ApplicationException.class, () -> kakaoSearch.getCoordinatesByAddress(address));
+
+        //then
+        then(kakaoUriBuilder).should().buildUriByAddressSearch(address);
+        then(restTemplate).should().exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class);
+
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.KAKAO_API_ERROR);
+        assertThat(result.getMessage()).isEqualTo(ErrorCode.KAKAO_API_ERROR.getMessage());
     }
 
     // 좌표를 통한 음식점 검색 메서드 테스트
@@ -125,6 +277,175 @@ class KakaoSearchTest {
         assertThat(result).isEqualTo(restaurants);
         assertThat(result.metaDto()).isEqualTo(restaurantsMetaDto);
         assertThat(result.documentDtos()).isEqualTo(restaurantsDocumentList);
+    }
+
+
+    @Test
+    void 잘못된_정보로_카카오_키워드검색시_예외가_반환된다() throws Exception {
+        //given
+        double latitude = 37.4969397553084;
+        double longitude = 126.953540835787;
+        double radius = 3.0;
+
+        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_CATEGORY_SEARCH_URL)
+                .queryParam("category_group_code", PUB_CATEGORY)
+                .queryParam("x", longitude)
+                .queryParam("y", latitude)
+                .queryParam("radius", radius * 1000)
+                .queryParam("sort", "distance")
+                .queryParam("page", 1)
+                .build().encode().toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
+        HttpEntity httpEntity = new HttpEntity<>(headers);
+
+        String kakaoErrorResponseBody = """
+                {
+                  "code": -6,
+                  "msg": "허용되지 않는 요청입니다."
+                }
+                """;
+        HttpServerErrorException kakaoError = new HttpServerErrorException(
+                HttpStatus.UNAUTHORIZED,
+                "Internal Server Error",
+                kakaoErrorResponseBody.getBytes(),
+                StandardCharsets.UTF_8
+        );
+
+        KakaoErrorResponse kakaoErrorResponse = new KakaoErrorResponse(-6, "허용되지 않는 요청입니다.");
+
+
+        given(kakaoUriBuilder.buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, 1)).willReturn(uri);
+        given(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class))
+                .willThrow(kakaoError);
+        given(om.readValue(kakaoErrorResponseBody, KakaoErrorResponse.class))
+                .willReturn(kakaoErrorResponse);
+
+        //when
+        ApplicationException result = assertThrows(ApplicationException.class, () -> kakaoSearch.getRestaurantsByLocation(latitude, longitude, radius, 1));
+
+        //then
+        then(kakaoUriBuilder).should().buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, 1);
+        then(restTemplate).should().exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class);
+        then(om).should().readValue(kakaoErrorResponseBody, KakaoErrorResponse.class);
+
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.KAKAO_UNAUTHORIZED_ERROR);
+        assertThat(result.getMessage()).isEqualTo("ErrorCode[-6] 허용되지 않는 요청입니다.");
+    }
+
+
+    @Test
+    void 카카오키워드검색중_네트워크로인한_예외가_발생할_수_있다() throws Exception {
+        //given
+        double latitude = 37.4969397553084;
+        double longitude = 126.953540835787;
+        double radius = 3.0;
+
+        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_CATEGORY_SEARCH_URL)
+                .queryParam("category_group_code", PUB_CATEGORY)
+                .queryParam("x", longitude)
+                .queryParam("y", latitude)
+                .queryParam("radius", radius * 1000)
+                .queryParam("sort", "distance")
+                .queryParam("page", 1)
+                .build().encode().toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
+        HttpEntity httpEntity = new HttpEntity<>(headers);
+
+        ResourceAccessException error = new ResourceAccessException("네트워크예외");
+
+        given(kakaoUriBuilder.buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, 1)).willReturn(uri);
+        given(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class))
+                .willThrow(error);
+
+        //when
+        ApplicationException result = assertThrows(ApplicationException.class, () -> kakaoSearch.getRestaurantsByLocation(latitude, longitude, radius, 1));
+
+        //then
+        then(kakaoUriBuilder).should().buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, 1);
+        then(restTemplate).should().exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class);
+
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.NETWORK_ERROR);
+        assertThat(result.getMessage()).isEqualTo("카카오 API 네트워크 연결 실패");
+    }
+
+    @Test
+    void 카카오키워드검색중_예상치못한_예외가_발생할_수_있다() throws Exception {
+        //given
+        double latitude = 37.4969397553084;
+        double longitude = 126.953540835787;
+        double radius = 3.0;
+
+        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_CATEGORY_SEARCH_URL)
+                .queryParam("category_group_code", PUB_CATEGORY)
+                .queryParam("x", longitude)
+                .queryParam("y", latitude)
+                .queryParam("radius", radius * 1000)
+                .queryParam("sort", "distance")
+                .queryParam("page", 1)
+                .build().encode().toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
+        HttpEntity httpEntity = new HttpEntity<>(headers);
+
+        NullPointerException error = new NullPointerException("알 수 없는 예외");
+
+        given(kakaoUriBuilder.buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, 1)).willReturn(uri);
+        given(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class))
+                .willThrow(error);
+
+        //when
+        ApplicationException result = assertThrows(ApplicationException.class, () -> kakaoSearch.getRestaurantsByLocation(latitude, longitude, radius, 1));
+
+        //then
+
+        then(kakaoUriBuilder).should().buildUriByKeywordSearch(latitude, longitude, radius, PUB_CATEGORY, 1);
+        then(restTemplate).should().exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class);
+
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.KAKAO_API_ERROR);
+        assertThat(result.getMessage()).isEqualTo(ErrorCode.KAKAO_API_ERROR.getMessage());
+    }
+
+    @Test
+    void 카카오_API예외응답의_Body가_비어있으면_예외가_발생한다() {
+        //given
+        String address = "서울 동작구 상도로 357";
+        URI uri = UriComponentsBuilder.fromHttpUrl(KAKAO_LOCAL_SEARCH_ADDRESS_URL)
+                .queryParam("query", address)
+                .build()
+                .encode()
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoRestApiKey);
+        HttpEntity httpEntity = new HttpEntity<>(headers);
+
+        HttpClientErrorException emptyResponseException = new HttpClientErrorException(
+                HttpStatus.BAD_REQUEST,
+                "Bad Request",
+                "".getBytes(),  // 빈 응답 바디
+                StandardCharsets.UTF_8
+        );
+
+        given(kakaoUriBuilder.buildUriByAddressSearch(address)).willReturn(uri);
+        given(restTemplate.exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class))
+                .willThrow(emptyResponseException);
+
+        //when
+        ApplicationException result = assertThrows(ApplicationException.class, () -> kakaoSearch.getCoordinatesByAddress(address));
+
+        //then
+        then(kakaoUriBuilder).should().buildUriByAddressSearch(address);
+        then(restTemplate).should().exchange(uri, HttpMethod.GET, httpEntity, KakaoResponse.class);
+
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.KAKAO_API_ERROR);
+        assertThat(result.getMessage()).isEqualTo(ErrorCode.KAKAO_API_ERROR.getMessage());
+
+
     }
 
 
