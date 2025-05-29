@@ -1,5 +1,6 @@
 package com.hana.cheers_up.global.config;
 
+import com.hana.cheers_up.global.config.jwt.JwtAuthenticationEntryPoint;
 import com.hana.cheers_up.global.config.jwt.JwtFilter;
 import com.hana.cheers_up.global.config.jwt.JwtUtils;
 import com.hana.cheers_up.global.config.oauth2.CustomOAuth2SuccessHandler;
@@ -23,6 +24,7 @@ public class SecurityConfig {
     private final JwtUtils jwtUtils;
     private final CustomOAuth2UserService oAuth2UserService;
     private final CustomOAuth2SuccessHandler oAuth2SuccessHandler;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -30,6 +32,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -41,7 +46,7 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization.baseUri("/api/v1/oauth2/authorization"))
-                        .loginPage("/api/v1/users/login")
+                        // .loginPage("/api/v1/users/login")
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )

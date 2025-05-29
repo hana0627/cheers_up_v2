@@ -1,5 +1,7 @@
 package com.hana.cheers_up.global.config.jwt;
 
+import com.hana.cheers_up.global.exception.ApplicationException;
+import com.hana.cheers_up.global.exception.constant.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,15 +54,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (header == null || !header.startsWith("Bearer ")) {
             log.info("Missing or malformed Authorization header");
-            response.sendRedirect("/api/v1/users/login");
-            return;
+            throw new ApplicationException(ErrorCode.UNAUTHORIZE, "로그인이 필요한 서비스입니다.");
         }
         String token = header.substring(7).trim();
 
         if (jwtUtils.isInvalidated(token) || jwtUtils.isExpired(token)) {
             log.error("Invalid or expired token");
-            response.sendRedirect("/api/v1/users/login");
-            return;
+            throw new ApplicationException(ErrorCode.UNAUTHORIZE, "로그인이 필요한 서비스입니다.");
         }
 
         String userId = jwtUtils.getUserId(token);

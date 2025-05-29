@@ -14,6 +14,7 @@ ErrorCode {
     JWT_TOKEN_PARSING_FAILED(HttpStatus.BAD_REQUEST, "JWT 토큰 파싱 중 오류가 발생했습니다."),
     UNSUPPORTED_LOGIN_TYPE(HttpStatus.BAD_REQUEST,"지원하지 않는 로그인 타입입니다."),
     NULL_USER_REQUEST(HttpStatus.BAD_REQUEST,"userRequest가 null 입니다."),
+    UNAUTHORIZE(HttpStatus.UNAUTHORIZED, "접근 권한이 없습니다."),
 
 
     // 카카오 관련
