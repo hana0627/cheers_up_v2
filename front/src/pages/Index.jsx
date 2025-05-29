@@ -1,67 +1,56 @@
-import React, { useState, useEffect } from 'react';
-import {useLocation, useNavigate} from "react-router-dom";
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from './context/AuthContext';
 
 const Index = () => {
+  const baseUrl = process.env.REACT_APP_API_URL;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated, loading } = useAuth();
 
-  const baseUrl = process.env.REACT_APP_API_URL
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  // 토큰 유효성 검사 함수
-  const isValidToken = (token) => {
-    if (!token) return false;
-
-    try {
-      // JWT 토큰 형식 확인 (3개 부분으로 나누어져 있는지)
-      const parts = token.split('.');
-      if (parts.length !== 3) return false;
-
-      // payload 디코딩해서 만료시간 확인
-      const payload = JSON.parse(atob(parts[1]));
-      const currentTime = Math.floor(Date.now() / 1000);
-
-      // 토큰이 만료되지 않았는지 확인
-      return payload.exp && payload.exp > currentTime;
-    } catch (error) {
-      console.error('토큰 검증 오류:', error);
-      return false;
-    }
-  };
-
-
-  // 컴포넌트 마운트 시 기존 토큰 확인
+  // 이미 인증된 사용자는 PubSearch로 리다이렉트
   useEffect(() => {
-    const existingToken = localStorage.getItem('accessToken');
-    if (isValidToken(existingToken)) {
-      // 유효한 토큰이 있으면 바로 PubSearch로 이동
+    if (!loading && isAuthenticated) {
       navigate('/PubSearch');
-    } else {
-      // 무효한 토큰이면 제거
-      if (existingToken) {
-        localStorage.removeItem('accessToken');
-      }
     }
-  }, [navigate]);
+  }, [isAuthenticated, loading, navigate]);
 
-  // URL에서 토큰 추출 및 처리
+  // URL에서 토큰 추출 및 로그인 처리
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const token = urlParams.get('token');
 
-    if(token) {
-      if (isValidToken(token)) {
-        localStorage.setItem('accessToken', token);
+    if (token) {
+      // 로그인 시도
+      const success = login(token);
 
-        // URL에서 토큰 파라미터 제거
-        window.history.replaceState({}, document.title, '/');
+      // URL에서 토큰 파라미터 제거 (보안상 중요)
+      window.history.replaceState({}, document.title, '/');
 
-        navigate('/PubSearch');
+      if (success) {
+        // 로그인 성공 시 원래 가려던 페이지로 이동 (또는 기본 페이지)
+        const from = location.state?.from?.pathname || '/PubSearch';
+        navigate(from, { replace: true });
       } else {
-        console.error('유효하지 않은 토큰입니다.');
         alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
       }
     }
-  }, [location, navigate]);
+  }, [location, navigate, login]);
+
+  // 로딩 중일 때
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        backgroundColor: '#f2f2f2'
+      }}>
+        <div>로딩 중...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="container" style={{
@@ -75,20 +64,72 @@ const Index = () => {
       margin: '0 auto',
       backgroundColor: '#f2f2f2'
     }}>
+      {/* 로그인 페이지 헤더 */}
+      <div style={{ marginBottom: '30px', textAlign: 'center' }}>
+        <h1 style={{
+          fontSize: '36px',
+          color: '#333',
+          marginBottom: '10px'
+        }}>
+          <span style={{ color: '#EA4335' }}>오늘</span>{' '}
+          <span style={{ color: '#FBBC05' }}>한잔</span>{' '}
+          <span style={{ color: '#4285F4' }}>어때요</span>
+          <span style={{ color: '#34A853' }}>?</span>
+        </h1>
+        <p style={{ color: '#666', fontSize: '18px' }}>
+          근처 술집을 찾아서 즐거운 시간을 보내세요
+        </p>
+      </div>
+
+      {/* 이미지 영역 */}
       <div className="left-div" style={{
         flex: 1,
         padding: '20px',
         backgroundColor: '#f9f9f9',
         textAlign: 'center',
-        width: '60%'
+        width: '60%',
+        borderRadius: '10px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+        marginBottom: '30px'
       }}>
-        <img src="/images/beer-advertising.jpg" alt="Image" style={{height: '600px', width: '400px', maxWidth: '100%'}}/>
+        <img
+          src="/images/beer-advertising.jpg"
+          alt="술집 찾기 이미지"
+          style={{
+            height: '400px',
+            width: '300px',
+            maxWidth: '100%',
+            borderRadius: '8px'
+          }}
+        />
       </div>
 
+      {/* 카카오 로그인 버튼 */}
       <div>
-        <a href={baseUrl+"/oauth2/authorization/kakao"} role="button" id="kakao-login" className="me-2">
-          <img alt="Kakao Login" src="/images/kakao_login_medium.png"/>
+        <a
+          href={baseUrl + "/api/v1/oauth2/authorization/kakao"}
+          role="button"
+          id="kakao-login"
+          className="me-2"
+          style={{
+            display: 'inline-block',
+            transition: 'transform 0.2s ease'
+          }}
+          onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+          onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+        >
+          <img alt="카카오 로그인" src="/images/kakao_login_medium.png"/>
         </a>
+      </div>
+
+      {/* 추가 정보 */}
+      <div style={{
+        marginTop: '20px',
+        textAlign: 'center',
+        color: '#666',
+        fontSize: '14px'
+      }}>
+        <p>카카오 계정으로 간편하게 로그인하세요</p>
       </div>
     </div>
   );

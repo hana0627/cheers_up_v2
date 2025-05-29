@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const PubList = () => {
   const accessToken = localStorage.getItem('accessToken');
   const location = useLocation();
+  const navigate = useNavigate();
   const baseUrl = process.env.REACT_APP_API_URL;
 
   const [pubs, setPubs] = useState([]);
@@ -40,7 +41,7 @@ const PubList = () => {
         }
       }).open();
     } else {
-      console.error('Daum Postcode API가 로드되지 않았습니다.');
+      alert('Daum Postcode API가 로드되지 않았습니다.');
     }
   };
 
@@ -60,10 +61,12 @@ const PubList = () => {
           }
           setLoading(false);
         })
+
         .catch(error => {
-          console.error('검색 중 오류 발생:', error);
-          alert('검색 중 오류가 발생했습니다.');
-          // 로딩 상태 종료
+          if (error.response && error.response.data && error.response.data.result) {
+            alert(error.response.data.result);
+            navigate("/")
+          }
           setLoading(false);
         });
     } else {
@@ -79,13 +82,16 @@ const PubList = () => {
       backgroundColor: '#f2f2f2',
       margin: 0,
       padding: 0,
-      minHeight: '100vh'
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     h1: {
       marginTop: '50px',
       fontSize: '48px',
       color: '#333',
-      marginBottom: '30px'
+      marginBottom: '50px'
     },
     form: {
       marginTop: '50px',
