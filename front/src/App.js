@@ -5,7 +5,7 @@ import PubSearch from "./pages/pub/PubSearch";
 import PubList from "./pages/pub/PubList";
 import {AuthProvider} from "./pages/context/AuthContext";
 import ProtectedRoute from "./pages/ProtectedRoute";
-import ErrorPage404 from "./pages/error/ErorPage404r";
+import ErrorPage404 from "./pages/error/ErorPage404";
 
 
 
