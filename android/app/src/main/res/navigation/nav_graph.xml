@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.hana.cheers_up.HomeFragment"
+        android:label="홈"
+        tools:layout="@layout/fragment_home" />
+
+    <!-- 나머지 프래그먼트들은 나중에 추가 -->
+    <!--
+    <fragment
+        android:id="@+id/nav_content2"
+        android:name="com.hana.cheers_up.CompanyFragment"
+        android:label="2번탭" />
+
+    <fragment
+        android:id="@+id/nav_content3"
+        android:name="com.hana.cheers_up.JaewonFragment"
+        android:label="3번탭" />
+
+    <fragment
+        android:id="@+id/nav_content4"
+        android:name="com.hana.cheers_up.JaewoongFragment"
+        android:label="4번탭" />
+
+    <fragment
+        android:id="@+id/nav_content5"
+        android:name="com.hana.cheers_up.WriteFragment"
+        android:label="5번탭" />
+    -->
+
+</navigation>

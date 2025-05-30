@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@android:drawable/ic_menu_compass"
+        android:title="홈" />
+
+    <item
+        android:id="@+id/nav_content2"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="2번탭" />
+
+    <item
+        android:id="@+id/nav_content3"
+        android:icon="@android:drawable/ic_menu_gallery"
+        android:title="3번탭" />
+
+    <item
+        android:id="@+id/nav_content4"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="4번탭" />
+
+    <item
+        android:id="@+id/nav_content5"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="5번탭" />
+
+</menu>

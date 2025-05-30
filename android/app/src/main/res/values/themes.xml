@@ -1,9 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Cheers_up" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Base.Theme.CheersUp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#34A853</item>
+        <item name="colorPrimaryVariant">#333333</item>
+        <item name="colorSecondary">#4285F4</item>
+        <item name="android:statusBarColor">#333333</item>
     </style>
 
-    <style name="Theme.Cheers_up" parent="Base.Theme.Cheers_up" />
+    <style name="Theme.CheersUp" parent="Base.Theme.CheersUp" />
 </resources>
