@@ -54,7 +54,6 @@
                 android:textColor="#34A853"
                 android:textSize="36sp"
                 android:textStyle="bold" />
-
         </LinearLayout>
 
         <!-- 검색 영역 -->
