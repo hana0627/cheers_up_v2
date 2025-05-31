@@ -1,11 +1,14 @@
 package com.hana.cheers_up
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.hana.cheers_up.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -31,8 +34,8 @@ class HomeFragment : Fragment() {
     private fun setupSearch() {
         // 주소 검색 EditText 클릭 이벤트
         binding.etAddress.setOnClickListener {
-            Toast.makeText(requireContext(), "주소 검색 기능 구현 예정", Toast.LENGTH_SHORT).show()
-            // TODO: 주소 검색 Activity나 Dialog 열기
+            val intent = Intent(requireContext(), PostSearchActivity::class.java)
+            postSearchLauncher.launch(intent)
         }
 
         // 검색 버튼 클릭 이벤트
@@ -52,6 +55,27 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    // 🏠 주소 검색 결과를 받기 위한 ActivityResultLauncher
+    private val postSearchLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val address = result.data?.getStringExtra(PostSearchActivity.EXTRA_ADDRESS)
+            address?.let {
+                binding.etAddress.setText(it)
+                binding.etAddress.hint = it
+                handlePostSelect(it)
+            }
+        }
+    }
+
+    private fun handlePostSelect(address: String) {
+        // 🎯 선택된 주소로 추가 작업 수행
+        // 예: 좌표 변환, 저장, API 호출 등
+        // 아직은 미구현. 혹시 사용이 필요할 수도 있을거 같아서 남겨둠
+    }
+
 
     companion object {
         fun newInstance(): HomeFragment {

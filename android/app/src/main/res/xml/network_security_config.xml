@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 🔓 Daum Postcode API를 위한 HTTP 허용 설정 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Daum CDN 서버 (Postcode API 스크립트 로드) -->
+        <domain includeSubdomains="true">t1.daumcdn.net</domain>
+        <!-- Postcode API 서버 (주소 검색 데이터) -->
+        <domain includeSubdomains="true">postcode.map.daum.net</domain>
+    </domain-config>
+
+    <!-- 🔒 다른 모든 도메인은 HTTPS만 허용 (기본값) -->
+</network-security-config>
