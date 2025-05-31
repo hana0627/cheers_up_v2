@@ -6,6 +6,10 @@
         <domain includeSubdomains="true">t1.daumcdn.net</domain>
         <!-- Postcode API 서버 (주소 검색 데이터) -->
         <domain includeSubdomains="true">postcode.map.daum.net</domain>
+
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+
     </domain-config>
 
     <!-- 🔒 다른 모든 도메인은 HTTPS만 허용 (기본값) -->

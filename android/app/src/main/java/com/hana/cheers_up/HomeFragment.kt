@@ -3,6 +3,7 @@ package com.hana.cheers_up
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.hana.cheers_up.databinding.FragmentHomeBinding
+import com.kakao.sdk.user.UserApiClient
 
 class HomeFragment : Fragment() {
 
@@ -29,6 +31,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupSearch()
+        logoutEvent()
     }
 
     private fun setupSearch() {
@@ -76,10 +79,30 @@ class HomeFragment : Fragment() {
         // 아직은 미구현. 혹시 사용이 필요할 수도 있을거 같아서 남겨둠
     }
 
-
     companion object {
         fun newInstance(): HomeFragment {
             return HomeFragment()
         }
+    }
+
+
+    private fun logoutEvent() {
+        binding.btnLogout.setOnClickListener {
+            UserApiClient.instance.logout { error ->
+                if (error != null) {
+                    Log.e("HomeFragment", "로그아웃 실패", error)
+                    // 토큰이 이미 무효한 경우에도 로컬 정리는 진행
+                } else {
+                    Log.i("HomeFragment", "로그아웃 성공")
+                }
+                navigateToSplash()
+            }
+        }
+    }
+    private fun navigateToSplash() {
+        val intent = Intent(requireContext(), SplashActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        requireActivity().finish()
     }
 }
