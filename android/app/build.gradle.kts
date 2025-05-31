@@ -30,6 +30,9 @@ android {
 
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${getLocalProperty("KAKAO_NATIVE_APP_KEY")}\"")
         resValue("string", "kakao_app_key", getLocalProperty("KAKAO_NATIVE_APP_KEY"))
+
+        buildConfigField("String", "BASE_URL", "\"${getLocalProperty("BASE_URL")}\"")
+        resValue("string", "base_url", getLocalProperty("BASE_URL"))
     }
 
     buildTypes {
@@ -74,6 +77,11 @@ dependencies {
 
     // Kakao
     implementation("com.kakao.sdk:v2-all:2.11.0")
+
+    // Retrofit for API calls
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
