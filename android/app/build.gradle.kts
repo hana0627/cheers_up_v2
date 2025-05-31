@@ -1,6 +1,18 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+}
+
+fun getLocalProperty(key: String): String {
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(FileInputStream(localPropertiesFile))
+    }
+    return localProperties.getProperty(key) ?: ""
 }
 
 android {
@@ -15,6 +27,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"${getLocalProperty("KAKAO_NATIVE_APP_KEY")}\"")
+        resValue("string", "kakao_app_key", getLocalProperty("KAKAO_NATIVE_APP_KEY"))
     }
 
     buildTypes {
@@ -36,6 +51,7 @@ android {
 
     // ViewBinding 활성화
     buildFeatures {
+        buildConfig = true
         viewBinding = true
     }
 }
@@ -55,6 +71,9 @@ dependencies {
 
     // Fragment
     implementation("androidx.fragment:fragment-ktx:1.8.5")
+
+    // Kakao
+    implementation("com.kakao.sdk:v2-all:2.11.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

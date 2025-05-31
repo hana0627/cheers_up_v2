@@ -28,4 +28,7 @@
     <!-- 아이콘 색상들 -->
     <color name="icon_primary">#757575</color>
     <color name="icon_secondary">#BDBDBD</color>
+
+    <!-- 배경화면 -->
+    <color name="background_color">#F2F2F2</color>
 </resources>
