@@ -7,6 +7,9 @@ spring:
       prod:
         - prod
 
+server:
+  address: 0.0.0.0
+
 ---
 
 spring:
@@ -31,10 +34,6 @@ spring:
     url: ${MARIADB_URL}
     username: ${MARIADB_USERNAME}
     password: ${MARIADB_PASSWORD}
-
-  redis:
-    host: localhost
-    port: 6379
 
   jpa:
     hibernate:

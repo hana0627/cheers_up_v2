@@ -1,9 +1,7 @@
 package com.hana.cheers_up.global.exception.constant;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-@Getter
 public enum
 ErrorCode {
     SAMPLE_ERROR_CODE(HttpStatus.INTERNAL_SERVER_ERROR, "예시용 에러코드 입니다."),
@@ -29,6 +27,15 @@ ErrorCode {
 
     private final HttpStatus status;
     private final String message;
+
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 
 
     ErrorCode(HttpStatus status, String message) {

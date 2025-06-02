@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -36,16 +37,34 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if("kakao".equals(registrationId)) {
             oauth2UserInfo = new KakaoUserInfo(oAuth2User.getAttributes());
+            return processOAuth2User("kakao", oauth2UserInfo);
         }
-        if(oauth2UserInfo == null) {
+//        if(oauth2UserInfo == null) {
             throw new ApplicationException(ErrorCode.UNSUPPORTED_LOGIN_TYPE, "지원하지 않는 로그인 타입입니다.");
+//        }
+
+
+//        String providerId = String.valueOf(oauth2UserInfo.getProviderId()); // 카카오 스펙에서의 Long타입의 id값
+//        String username = registrationId + "_" + providerId;
+
+//        UserAccountDto userDto = userAccountService.searchUserOrSave(username, oauth2UserInfo);
+//        return new CustomUserDetails(userDto);
+    }
+
+    @Transactional
+    public CustomUserDetails processKakaoUser(KakaoUserInfo kakaoUserInfo) {
+        if(kakaoUserInfo == null) {
+            throw new ApplicationException(ErrorCode.NULL_USER_REQUEST, "kakaoUserInfo is null");
         }
 
-        String providerId = String.valueOf(oauth2UserInfo.getProviderId()); // 카카오 스펙에서의 Long타입의 id값
-        String username = registrationId + "_" + providerId;
+        return processOAuth2User("kakao", kakaoUserInfo);
+    }
+
+    private CustomUserDetails processOAuth2User(String provider, Oauth2UserInfo oauth2UserInfo) {
+        String providerId = String.valueOf(oauth2UserInfo.getProviderId());
+        String username = provider + "_" + providerId;
 
         UserAccountDto userDto = userAccountService.searchUserOrSave(username, oauth2UserInfo);
-//        return new CustomUserDetails(userDto, oAuth2User.getAttributes());
         return new CustomUserDetails(userDto);
     }
 }
