@@ -7,9 +7,9 @@
 ## 개발 환경
 
 * Intellij IDEA Ultimate
-* Java 17
+* Java 17, Kotlin
 * Gradle 7.6.1
-* Spring Boot 2.7.10
+* ~~ Spring Boot 2.7.10 ~~ Spring Boot 3.5.0
 
 ---
 
@@ -19,7 +19,7 @@ Spring Boot
 
 * Spring Web
 * Spring Data JPA
-* Thymeleaf
+* ~~ Thymeleaf ~~ React, Android
 * Spring Security
 * Oauth2
 * Jwt
