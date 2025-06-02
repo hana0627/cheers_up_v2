@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0' // Kotlin 플러그인 추가
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.9.0' // Spring Kotlin 지원
     id 'org.springframework.boot' version '3.5.0'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'jacoco' // Jacoco Plugin
@@ -7,7 +9,8 @@ plugins {
 
 group = 'com.hana'
 version = 'v1.0'
-sourceCompatibility = '21'
+sourceCompatibility = '17'
+targetCompatibility = '17'
 
 configurations {
     compileOnly {
@@ -51,6 +54,11 @@ dependencies {
     // OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    // Kotlin
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
+    testImplementation "org.jetbrains.kotlin:kotlin-test"
 }
 
 
