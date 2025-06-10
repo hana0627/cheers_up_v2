@@ -26,7 +26,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="오늘11"
+            android:text="오늘"
             android:textColor="#EA4335"
             android:textSize="36sp"
             android:textStyle="bold" />

@@ -8,7 +8,7 @@
         <domain includeSubdomains="true">postcode.map.daum.net</domain>
 
         <!-- 공유기마다 이 정보 매번 바뀜 -->
-        <domain includeSubdomains="true">192.168.219.48</domain>
+        <domain includeSubdomains="true">192.168.254.241</domain>
 
     </domain-config>
 
