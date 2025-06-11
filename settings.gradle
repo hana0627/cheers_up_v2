@@ -1,0 +1,2 @@
+rootProject.name = 'cheers_up_v2'
+include ':cheers_up'
