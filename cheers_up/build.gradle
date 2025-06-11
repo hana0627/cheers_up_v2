@@ -7,6 +7,13 @@ plugins {
     id 'jacoco' // Jacoco Plugin
 }
 
+// 코틀린 빌드설정
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
 group = 'com.hana'
 version = 'v1.0'
 sourceCompatibility = '17'
