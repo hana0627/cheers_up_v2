@@ -203,5 +203,43 @@ public class CustomOAuth2UserServiceTest {
 
     }
 
+    @Test
+    void 안드로이드_로그인시_카카오유저정보가_없으면_예외가_발생한다() {
+        //given
+        KakaoUserInfo kakaoUserInfo = null;
+
+        //when
+        ApplicationException result = assertThrows(ApplicationException.class, () -> customOAuth2UserService.processKakaoUser(kakaoUserInfo));
+
+        //then
+        assertThat(result.getErrorCode()).isEqualTo(ErrorCode.NULL_USER_REQUEST);
+        assertThat(result.getMessage()).contains("kakaoUserInfo is null");
+    }
+
+    @Test
+    void 안드로이드_로그인시_UserDetails를_반환한다() {
+        //given
+        KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(attributes);
+
+        String providerId = String.valueOf(kakaoUserInfo.getProviderId());
+        String username = "kakao" + "_" + providerId;
+
+        userAccountDto = UserAccountDto.of(username, kakaoUserInfo.getEmail(), kakaoUserInfo.getNickname(), "신세경닮음", RoleType.USER);
+
+        given(userAccountService.searchUserOrSave(username, kakaoUserInfo)).willReturn(userAccountDto);
+
+        //when
+        CustomUserDetails result = customOAuth2UserService.processKakaoUser(kakaoUserInfo);
+
+        //then
+        then(userAccountService).should().searchUserOrSave(username, kakaoUserInfo);
+
+        assertThat(result.getName()).isEqualTo(userAccountDto.userId());
+        assertThat(result.getNickname()).isEqualTo(userAccountDto.nickname());
+        assertThat(result.getEmail()).isEqualTo(userAccountDto.email());
+        assertThat(result.getRoleType()).isEqualTo(userAccountDto.roleType());
+        assertThat(result.getAttributes()).isEqualTo(Map.of());
+    }
+
 }
 

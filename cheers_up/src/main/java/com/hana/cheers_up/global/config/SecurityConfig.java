@@ -1,6 +1,6 @@
 package com.hana.cheers_up.global.config;
 
-import com.hana.cheers_up.global.config.jwt.JwtAuthenticationEntryPoint;
+//import com.hana.cheers_up.global.config.jwt.JwtAuthenticationEntryPoint;
 import com.hana.cheers_up.global.config.jwt.JwtFilter;
 import com.hana.cheers_up.global.config.jwt.JwtUtils;
 import com.hana.cheers_up.global.config.oauth2.CustomOAuth2SuccessHandler;
@@ -24,7 +24,7 @@ public class SecurityConfig {
     private final JwtUtils jwtUtils;
     private final CustomOAuth2UserService oAuth2UserService;
     private final CustomOAuth2SuccessHandler oAuth2SuccessHandler;
-    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+//    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -32,9 +32,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                )
+//                .exceptionHandling(ex -> ex
+//                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+//                )
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth

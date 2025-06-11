@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -16,8 +17,9 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,13 +45,14 @@ public class SecurityConfigTest {
     }
 
     @Test
-    void 인증_필요_경로는_로그인페이지로_리디렉션() throws Exception {
+    void 인증_필요_경로접근시_예외발생() throws Exception {
         //given
 
         //when & then
         mvc.perform(get("/api/v2/search"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/api/v1/users/login"));
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.resultCode").value("UNAUTHORIZED"))
+                .andExpect(jsonPath("$.result").value("로그인이 필요한 서비스입니다."));
     }
 
     @Test
@@ -70,5 +73,69 @@ public class SecurityConfigTest {
         mvc.perform(get("/api/v2/search").param("address", address))
                 .andExpect(status().isOk());
     }
+
+
+    /*
+
+    @Test
+void POST_요청시_인증없으면_JwtAuthenticationEntryPoint가_실행된다() throws Exception {
+    //given
+
+    //when & then
+    mvc.perform(post("/api/v2/search"))
+            .andExpect(status().isUnauthorized())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.resultCode").value("UNAUTHORIZED"))
+            .andExpect(jsonPath("$.result").value("로그인이 필요한 서비스입니다."));
+}
+     */
+
+    @Test
+    void 요청시_예외가_발생하면_JwtAuthenticationEntryPoint가_실행된다() throws Exception{
+        //given
+
+        //when && then
+        mvc.perform(post("/api/v2/search"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.resultCode").value("UNAUTHORIZED"))
+                .andExpect(jsonPath("$.result").value("로그인이 필요한 서비스입니다."));
+
+    }
+
+
+    @Test
+    void Bearer_없는_Authorization_헤더로_접근시_JwtAuthenticationEntryPoint가_실행된다() throws Exception {
+        //given
+        String malformedToken = "InvalidPrefix sometoken";
+
+        //when & then
+        mvc.perform(get("/api/v2/search")
+                        .header(HttpHeaders.AUTHORIZATION, malformedToken))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.resultCode").value("UNAUTHORIZED"))
+                .andExpect(jsonPath("$.result").value("로그인이 필요한 서비스입니다."));
+    }
+
+    @Test
+    void 잘못된_JWT_토큰으로_접근시_JwtAuthenticationEntryPoint가_실행된다() throws Exception {
+        //given
+        String invalidToken = "Bearer invalid.jwt.token";
+        given(jwtUtils.isExpired("invalid.jwt.token")).willReturn(true);
+
+        //when & then
+        mvc.perform(get("/api/v2/search")
+                        .header(HttpHeaders.AUTHORIZATION, invalidToken))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType("application/json;charset=UTF-8"))
+                .andExpect(jsonPath("$.resultCode").value("UNAUTHORIZED"))
+                .andExpect(jsonPath("$.result").value("로그인이 필요한 서비스입니다."));
+    }
+
+
+    /*
+
+     */
 }
 

@@ -25,6 +25,9 @@ public class TestSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET,
                                 "/", "/index", "/api/v1/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST,
+                                "/", "/index", "/api/v1/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2.disable())

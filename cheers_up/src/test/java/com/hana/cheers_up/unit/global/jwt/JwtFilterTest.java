@@ -186,7 +186,7 @@ public class JwtFilterTest {
     }
 
     @Test
-    void Authentication_헤더가_없으면_로그인페이지로_redirect한다() throws Exception{
+    void Authentication_헤더가_없으면_예외가_발생한다() throws Exception{
         //given
         request.setRequestURI("/api/v2/search");
 
@@ -194,15 +194,21 @@ public class JwtFilterTest {
         jwtFilter.doFilterInternal(request, response, filterChain);
 
         //then
-        assertThat(response.getRedirectedUrl()).isEqualTo("/api/v1/users/login");
         then(filterChain).shouldHaveNoInteractions();
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         assertThat(auth).isNull();
+
+        assertThat(response.getStatus()).isEqualTo(401);
+        assertThat(response.getContentType()).isEqualTo("application/json;charset=UTF-8");
+
+        String responseBody = response.getContentAsString();
+        assertThat(responseBody).contains("UNAUTHORIZED");
+        assertThat(responseBody).contains("로그인이 필요한 서비스입니다.");
     }
 
     @Test
-    void 토큰형식이_Bearer로_시작하지_않으면_로그인페이지로_redirect한다() throws Exception{
+    void 토큰형식이_Bearer로_시작하지_않으면_예외가_발생한다() throws Exception{
         //given
         String testToken = "thisistesttoken";
         String userId = "kakao_1234567890";
@@ -213,11 +219,19 @@ public class JwtFilterTest {
         jwtFilter.doFilterInternal(request, response, filterChain);
 
         //then
-        assertThat(response.getRedirectedUrl()).isEqualTo("/api/v1/users/login");
         then(filterChain).shouldHaveNoInteractions();
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         assertThat(auth).isNull();
+
+        assertThat(response.getStatus()).isEqualTo(401);
+        assertThat(response.getContentType()).isEqualTo("application/json;charset=UTF-8");
+
+        String responseBody = response.getContentAsString();
+        assertThat(responseBody).contains("UNAUTHORIZED");
+        assertThat(responseBody).contains("로그인이 필요한 서비스입니다.");
+
+
     }
 
 
