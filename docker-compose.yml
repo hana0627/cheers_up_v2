@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  cheers_up:
+    container_name: cheers_up_app
+    build: ./cheers_up
+    ports:
+      - "8080:8080"
+    depends_on:
+      mariaDB:
+        condition: service_healthy
+    environment:
+      - MARIADB_URL=${DB_URL}
+      - MARIADB_USERNAME=${DB_USERNAME}
+      - MARIADB_PASSWORD=${DB_PASSWORD}
+      - KAKAO_OAUTH_CLIENT_ID=${KAKAO_OAUTH_CLIENT_ID}
+      - KAKAO_OAUTH_CLIENT_SECRET=${KAKAO_OAUTH_CLIENT_SECRET}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_EXPIRED_TIME=${JWT_EXPIRED_TIME}
+      - FRONT_END_URL=${FRONT_END_URL}
+
+
+  mariaDB:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=cheers-up
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  mariadb_data: {}
