@@ -161,17 +161,20 @@ class HomeFragment : Fragment() {
 
 
     private fun logoutEvent() {
-        binding.btnLogout.setOnClickListener {
-            UserApiClient.instance.logout { error ->
-                if (error != null) {
-                    Log.e("HomeFragment", "로그아웃 실패", error)
-                    // 토큰이 이미 무효한 경우에도 로컬 정리는 진행
-                } else {
-                    Log.i("HomeFragment", "로그아웃 성공")
-                }
-                navigateToSplash()
-            }
-        }
+        // 테스트용 임시기능이였어서 주석
+        // 근데 혹시 필요할수도 있으니까 함수는 남겨둠
+
+//        binding.btnLogout.setOnClickListener {
+//            UserApiClient.instance.logout { error ->
+//                if (error != null) {
+//                    Log.e("HomeFragment", "로그아웃 실패", error)
+//                    // 토큰이 이미 무효한 경우에도 로컬 정리는 진행
+//                } else {
+//                    Log.i("HomeFragment", "로그아웃 성공")
+//                }
+//                navigateToSplash()
+//            }
+//        }
     }
     private fun navigateToSplash() {
         val intent = Intent(requireContext(), SplashActivity::class.java)

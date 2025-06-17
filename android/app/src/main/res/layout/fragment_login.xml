@@ -92,7 +92,7 @@
 
     <ImageView
         android:id="@+id/btnKakaoLogin"
-        android:src="@drawable/kakao_login_medium"
+        android:src="@drawable/kakao_login_large_narrow"
         android:paddingLeft="50dp"
         android:paddingRight="50dp"
         android:scaleType="fitXY"
