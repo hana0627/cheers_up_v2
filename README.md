@@ -26,6 +26,8 @@ Spring Boot
 * MariaDB
 * Docker-compose
 * Lombok
+  JUnit5
+* JaCoCo
 
 
 ---
