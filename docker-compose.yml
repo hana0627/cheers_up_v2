@@ -29,11 +29,12 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - ./mariadb_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect"]
       interval: 5s
       retries: 10
+    restart: unless-stopped
 
 volumes:
   mariadb_data: {}
