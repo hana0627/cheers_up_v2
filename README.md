@@ -1,4 +1,3 @@
-<img width="844" alt="스크린샷 2025-06-20 18 21 50" src="https://github.com/user-attachments/assets/a0f59f96-cb62-4750-a6e8-166466dbd87c" /># cheers_up - 카카오길찾기를 이용한 주변 술집찾기 프로젝트
 
 카카오 길찾기를 이용한 술집찾기 프로젝트입니다.
 
@@ -9,10 +8,13 @@
 * andriod : 플레이스토어 배포예정
 
 * web 화면
-<img width="250" alt="스크린샷 2025-06-20 18 21 50" src="https://github.com/user-attachments/assets/18a15ab5-2822-40ad-a13b-4398c3e0f113" />
+  
+<img width="300" alt="스크린샷 2025-06-20 18 21 50" src="https://github.com/user-attachments/assets/18a15ab5-2822-40ad-a13b-4398c3e0f113" />
 
 
 * andriod 화면
+
+
 ![KakaoTalk_Photo_2025-06-20-18-24-13](https://github.com/user-attachments/assets/ae45658d-a3ef-42e0-a785-ba52dd63242c)
 
 
