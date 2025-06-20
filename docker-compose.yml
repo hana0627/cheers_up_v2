@@ -35,6 +35,3 @@ services:
       interval: 5s
       retries: 10
     restart: unless-stopped
-
-volumes:
-  mariadb_data: {}
