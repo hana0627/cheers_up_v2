@@ -9,9 +9,12 @@
 * andriod : 플레이스토어 배포예정
 
 * web 화면
-<img width="844" alt="스크린샷 2025-06-20 18 21 50" src="https://github.com/user-attachments/assets/d1c5f37e-c213-4189-be6a-d777313c9c9d" />
+<img width="250" alt="스크린샷 2025-06-20 18 21 50" src="https://github.com/user-attachments/assets/18a15ab5-2822-40ad-a13b-4398c3e0f113" />
+
+
 * andriod 화면
-![KakaoTalk_Photo_2025-06-20-18-24-13](https://github.com/user-attachments/assets/560ca175-4384-463a-af0b-ed4207ad9550)
+![KakaoTalk_Photo_2025-06-20-18-24-13](https://github.com/user-attachments/assets/ae45658d-a3ef-42e0-a785-ba52dd63242c)
+
 
 
 ---
