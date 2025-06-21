@@ -1,7 +1,7 @@
 package com.hana.cheers_up.unit.application.pub.controller;
 
 import com.hana.cheers_up.application.pub.controller.PubController;
-import com.hana.cheers_up.application.pub.dto.response.PubResponse;
+import com.hana.cheers_up.application.pub.controller.response.PubResponse;
 import com.hana.cheers_up.application.pub.service.PubService;
 import com.hana.cheers_up.global.exception.ApplicationException;
 import com.hana.cheers_up.global.exception.constant.ErrorCode;

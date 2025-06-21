@@ -1,6 +1,6 @@
 package com.hana.cheers_up.unit.application.pub.service;
 
-import com.hana.cheers_up.application.pub.dto.response.PubResponse;
+import com.hana.cheers_up.application.pub.controller.response.PubResponse;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.KakaoSearch;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.DocumentDto;
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.KakaoResponse;

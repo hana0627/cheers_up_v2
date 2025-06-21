@@ -1,6 +1,6 @@
-package com.hana.cheers_up.unit.application.pub.dto.response;
+package com.hana.cheers_up.unit.application.pub.controller.response;
 
-import com.hana.cheers_up.application.pub.dto.response.PubResponse;
+import com.hana.cheers_up.application.pub.controller.response.PubResponse;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

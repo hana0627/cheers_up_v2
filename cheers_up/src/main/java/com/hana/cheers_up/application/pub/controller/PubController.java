@@ -1,6 +1,6 @@
 package com.hana.cheers_up.application.pub.controller;
 
-import com.hana.cheers_up.application.pub.dto.response.PubResponse;
+import com.hana.cheers_up.application.pub.controller.response.PubResponse;
 import com.hana.cheers_up.application.pub.service.PubService;
 import com.hana.cheers_up.global.response.APIResponse;
 import lombok.RequiredArgsConstructor;

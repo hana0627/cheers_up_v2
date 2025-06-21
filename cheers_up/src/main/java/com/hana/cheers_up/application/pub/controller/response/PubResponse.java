@@ -1,4 +1,4 @@
-package com.hana.cheers_up.application.pub.dto.response;
+package com.hana.cheers_up.application.pub.controller.response;
 
 import com.hana.cheers_up.application.pub.infrastructure.kakao.dto.LocationSearchResult;
 import lombok.Builder;
